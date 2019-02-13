@@ -1,0 +1,17 @@
+#-*- ruby -*-
+# aliased as `namespace` for a less fanciful, rake-like way of doing things
+plot :top_level do
+
+  # aliased as `desc` if you prefer brevity
+  description 'This is the description of the next plan defined'
+  # aliased as `task`, for a less fanciful, rake-like way of doing things
+  plan :child_plan do |arguments|
+    puts 'EXECUTING'
+    puts arguments
+  end
+
+  description 'This is another plan under the top_level plan'
+  plan :second_child do
+    # more tasks
+  end
+end

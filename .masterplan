@@ -1,0 +1,4 @@
+#-*- ruby -*-
+at_project_root
+
+has_plan_files
