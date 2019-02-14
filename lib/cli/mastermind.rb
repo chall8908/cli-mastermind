@@ -17,11 +17,12 @@ module CLI
         CLI::UI::StdoutRouter.enable
 
         CLI::UI::Frame.open('Mastermind') do
+
+          @arguments = ArgParse.new(cli_args)
+
           @config = spinner('Loading configuration') { Configuration.new }
           @plans = spinner('Loading plans') { @config.load_plans }
           @plan_stack = []
-
-          @arguments = ArgParse.new(cli_args)
 
           @selected_plan = nil
 
