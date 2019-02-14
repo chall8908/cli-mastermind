@@ -119,8 +119,8 @@ module CLI
         alias_method :has_plan_files, :plan_files
 
         # Specifies that a specific plan file exists at the given +filename+.
-        def plan_file(filename)
-          @config.add_plans([filename])
+        def plan_file(*files)
+          @config.add_plans(files)
         end
 
         # Add arbitrary configuration attributes to the configuration object.
