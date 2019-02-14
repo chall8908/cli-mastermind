@@ -30,8 +30,7 @@ module CLI
             plan_name = @arguments.get_next_plan_name
             @selected_plan = (@selected_plan || @plans)[plan_name]
             @plan_stack << titlize(plan_name)
-            # FIXME: Shitty error message
-            raise "Invalid child plan `#{plan_name}`" if @selected_plan.nil?
+            raise NoPlanFoundError.new(plan_stack) if @selected_plan.nil?
           end
 
           # Prevent the prompt from exploading
