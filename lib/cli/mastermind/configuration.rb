@@ -30,7 +30,11 @@ module CLI
 
         self.define_method attribute do
           value = self.instance_variable_get("@#{attribute}")
-          value.respond_to?(:call) ? self.instance_eval(&value) : value
+          return value unless value.respond_to?(:call)
+
+          # Cache the value returned by the block so we're not doing potentially
+          # expensive operations mutliple times.
+          self.instance_variable_set("@#{attribute}", self.instance_eval(&value))
         end
       end
 
