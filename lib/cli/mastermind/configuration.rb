@@ -20,6 +20,8 @@ module CLI
       # Path to the top-level masterplan
       MASTER_PLAN = File.join(Dir.home, PLANFILE)
 
+      attr_reader :plans
+
       # Adds an arbitrary attribute given by +attribute+ to the configuration class
       def self.add_attribute(attribute)
         return if self.method_defined? attribute
@@ -59,7 +61,7 @@ module CLI
       # Loads all plan files added using +add_plans+
       # @see Plan.load
       def load_plans
-        @plan_files.reduce({}) do |hash, file|
+        @plans ||= @plan_files.reduce({}) do |hash, file|
           plans = Plan.load file
           plans.each { |plan| hash[plan.name] = plan }
           hash
