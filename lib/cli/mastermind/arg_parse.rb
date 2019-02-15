@@ -13,6 +13,8 @@ module CLI::Mastermind
 
     def initialize(arguments=ARGV)
       @initial_arguments = arguments
+      @ask = true
+      @display_ui = true
 
       parse_arguments
     end
@@ -27,6 +29,14 @@ module CLI::Mastermind
 
     def get_next_plan_name
       @mastermind_arguments.shift
+    end
+
+    def display_ui?
+      @display_ui
+    end
+
+    def ask?
+      @ask
     end
 
     private
@@ -47,6 +57,14 @@ module CLI::Mastermind
         opt.on('--help', '-h', 'Display this help') do
           puts opt
           exit
+        end
+
+        opt.on('-A', '--no-ask', "Don't ask before executing a plan") do
+          @ask = false
+        end
+
+        opt.on('-U', '--no-fancy-ui', "Don't display the fancy UI") do
+          @display_ui = false
         end
 
         opt.on('--plans [PATTERN]', '--tasks [PATTERN]', '-P [PATTERN]', '-T [PATTERN]',

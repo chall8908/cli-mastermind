@@ -19,12 +19,11 @@ module CLI
       end
 
       def execute(cli_args=ARGV)
-        enable_ui
+        @arguments = ArgParse.new(cli_args)
+
+        enable_ui if @arguments.display_ui?
 
         frame('Mastermind') do
-
-          @arguments = ArgParse.new(cli_args)
-
           @config = spinner('Loading configuration') { Configuration.new }
           @plans = spinner('Loading plans') { @config.load_plans }
           @plan_stack = []
@@ -49,7 +48,7 @@ module CLI
             @plan_stack << titleize(@selected_plan.name)
           end
 
-          if confirm("Execute plan #{@plan_stack.join('/')}?")
+          if !@arguments.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
             @selected_plan.call(@arguments.plan_arguments)
           else
             puts 'aborted!'

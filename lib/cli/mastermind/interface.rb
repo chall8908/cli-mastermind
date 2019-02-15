@@ -3,7 +3,13 @@ module CLI::Mastermind::Interface
     CLI::UI::StdoutRouter.enable
   end
 
+  def ui_enabled?
+    CLI::UI::StdoutRouter.enabled?
+  end
+
   def spinner(title)
+    return yield unless ui_enabled?
+
     yield_value = nil
 
     group = CLI::UI::SpinGroup.new
@@ -25,6 +31,7 @@ module CLI::Mastermind::Interface
   end
 
   def frame(title)
+    return yield unless ui_enabled?
     CLI::UI::Frame.open(title) { yield }
   end
 
