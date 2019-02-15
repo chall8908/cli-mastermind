@@ -4,6 +4,7 @@ module CLI
   module Mastermind
     class Plan
       extend Forwardable
+      include Interface
 
       # The name of the plan.  Used to specify the plan from the command line
       # or from the interactive menu
