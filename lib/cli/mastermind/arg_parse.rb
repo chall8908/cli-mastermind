@@ -56,12 +56,9 @@ module CLI::Mastermind
           @display_ui = false
         end
 
-        # TODO: Finish plan display
-        # opt.on('--plans [PATTERN]', '--tasks [PATTERN]', '-P [PATTERN]', '-T [PATTERN]',
-        #        [:text],
-        #        'Display plans.  Optional pattern is used to filter the returned plans.') do |pattern|
-        #   @pattern = RegExp.new(pattern || '*')
-        # end
+        opt.on('--plans [PATTERN]', '--tasks [PATTERN]', '-P', '-T', 'Display plans.  Optional pattern is used to filter the returned plans.') do |pattern|
+          @pattern = Regexp.new(pattern || '.')
+        end
       end
     end
 

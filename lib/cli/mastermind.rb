@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'cli/ui'
 require 'cli/mastermind/arg_parse'
 require 'cli/mastermind/configuration'
@@ -12,12 +13,13 @@ module CLI
     extend Interface
 
     class << self
-      attr_reader :plans
-
+      # Expose the configuration loaded during +execute+.
       def configuration
         @config
       end
 
+      # Process incoming options and take an appropriate action.
+      # This is normally called by the mastermind executable.
       def execute(cli_args=ARGV)
         @arguments = ArgParse.new(cli_args)
 
@@ -26,35 +28,18 @@ module CLI
         frame('Mastermind') do
           @config = spinner('Loading configuration') { Configuration.new }
           @plans = spinner('Loading plans') { @config.load_plans }
-          @plan_stack = []
 
-          @selected_plan = nil
-
-          while @arguments.has_additional_plan_names?
-            plan_name = @arguments.get_next_plan_name
-            @selected_plan = (@selected_plan || @plans)[plan_name]
-            @plan_stack << titleize(plan_name)
-
-            if @selected_plan.nil?
-              puts "No plan found at #{@plan_stack.join('/')}"
-              puts @arguments.parser
-              exit 1
-            end
+          if @arguments.display_plans?
+            do_filtered_plan_display
+            exit 0
           end
 
-          # Prevent the prompt from exploading
-          if @selected_plan.nil? and @plans.count == 1
-            @selected_plan = @plans.values.first
-            @plan_stack << titleize(@selected_plan.name)
-          end
+          process_plan_names
 
-          while @selected_plan.nil? or @selected_plan.has_children?
-            do_interactive_plan_selection
-            @plan_stack << titleize(@selected_plan.name)
-          end
+          do_interactive_plan_selection until executable_plan_selected?
 
-          if !@arguments.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
-            @selected_plan.call(@arguments.plan_arguments)
+          if user_is_sure?
+            execute_plan!
           else
             puts 'aborted!'
           end
@@ -63,12 +48,89 @@ module CLI
 
       private
 
+      def do_filtered_plan_display
+        filter_plans @arguments.pattern
+
+        unless @plans.empty?
+          frame('Plans') do
+            display_plans
+          end
+        else
+          puts stylize("{{x}} No plans match #{@arguments.pattern.source}")
+        end
+      end
+
+      def display_plans(plans=@plans, prefix='')
+        plans.each do |(name, plan)|
+          next unless plan.has_children? or plan.description
+
+          print prefix + '• '
+          puts stylize("{{yellow:#{titleize(name)}")
+          if plan.description
+            print prefix + '  - '
+            puts stylize("{{blue:#{plan.description}}}")
+          end
+
+          display_plans(plan.children, "  " + prefix) if plan.has_children?
+          print "\n"
+        end
+      end
+
+      def filter_plans(pattern, plans=@plans)
+        plans.keep_if do |name, plan|
+          # Don't display plans without a description or children
+          next false unless plan.has_children? or plan.description
+          next true if name =~ pattern
+          next false unless plan.has_children?
+
+          filter_plans(pattern, plan.children)
+
+          plan.has_children?
+        end
+      end
+
+      def process_plan_names
+        @plan_stack = []
+
+        @selected_plan = nil
+
+        while @arguments.has_additional_plan_names?
+          plan_name = @arguments.get_next_plan_name
+          @selected_plan = (@selected_plan || @plans)[plan_name]
+          @plan_stack << titleize(plan_name)
+
+          if @selected_plan.nil?
+            puts "No plan found at #{@plan_stack.join('/')}"
+            puts @arguments.parser
+            exit 1
+          end
+        end
+
+        # Prevent the prompt from exploading
+        if @selected_plan.nil? and @plans.count == 1
+          @selected_plan = @plans.values.first
+          @plan_stack << titleize(@selected_plan.name)
+        end
+      end
+
       def do_interactive_plan_selection
         options = @selected_plan&.children || @plans
 
         @selected_plan = select("Select a plan under #{@plan_stack.join('/')}", options: options)
+        @plan_stack << titleize(@selected_plan.name)
       end
 
+      def executable_plan_selected?
+        not (@selected_plan.nil? or @selected_plan.has_children?)
+      end
+
+      def user_is_sure?
+        !@arguments.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
+      end
+
+      def execute_plan!
+        @selected_plan.call(@arguments.plan_arguments)
+      end
     end
   end
 end
