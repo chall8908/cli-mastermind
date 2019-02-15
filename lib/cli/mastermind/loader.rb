@@ -32,4 +32,3 @@ module CLI::Mastermind
 end
 
 require 'cli/mastermind/loader/planfile_loader'
-require 'cli/mastermind/loader/yaml_loader'
