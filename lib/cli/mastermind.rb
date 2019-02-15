@@ -12,8 +12,11 @@ module CLI
     extend Interface
 
     class << self
-      attr_reader :configuration
       attr_reader :plans
+
+      def configuration
+        @config
+      end
 
       def execute(cli_args=ARGV)
         enable_ui
