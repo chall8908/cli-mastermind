@@ -19,7 +19,7 @@ file in your home directory, if one exists.
 In this way, configuration for your tools can live where it makes the most sense
 for it to live with as much or as little duplication as you deem necessary.
 
-See [Writing Masterplans][#writing-masterplans] for more on their structure and semantics.
+See [Writing Masterplans](#writing-masterplans) for more on their structure and semantics.
 
 Mastermind makes up for the lack of language flexibility in its configuration
 with full flexibility in its planfiles.  Which brings us to...
