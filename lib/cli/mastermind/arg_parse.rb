@@ -39,19 +39,8 @@ module CLI::Mastermind
       @ask
     end
 
-    private
-
-    def parse_arguments
-      @mastermind_arguments = @initial_arguments.take_while { |arg| arg != '--' }
-      @plan_arguments = @initial_arguments[(@mastermind_arguments.size + 1)..-1]
-
-      unless @mastermind_arguments.empty?
-        @mastermind_arguments = parser.parse *@mastermind_arguments
-      end
-    end
-
     def parser
-      OptionParser.new do |opt|
+      @parser ||= OptionParser.new do |opt|
         opt.banner = 'Usage: mastermind [--help, -h] [--plans[ PATTERN], --tasks[ PATTERN], -T [PATTERN], -P [PATTERN] [PLAN[, PLAN[, ...]]] -- [PLAN ARGUMENTS]'
 
         opt.on('--help', '-h', 'Display this help') do
@@ -73,6 +62,17 @@ module CLI::Mastermind
         #        'Display plans.  Optional pattern is used to filter the returned plans.') do |pattern|
         #   @pattern = RegExp.new(pattern || '*')
         # end
+      end
+    end
+
+    private
+
+    def parse_arguments
+      @mastermind_arguments = @initial_arguments.take_while { |arg| arg != '--' }
+      @plan_arguments = @initial_arguments[(@mastermind_arguments.size + 1)..-1]
+
+      unless @mastermind_arguments.empty?
+        @mastermind_arguments = parser.parse *@mastermind_arguments
       end
     end
   end

@@ -34,7 +34,12 @@ module CLI
             plan_name = @arguments.get_next_plan_name
             @selected_plan = (@selected_plan || @plans)[plan_name]
             @plan_stack << titleize(plan_name)
-            raise NoPlanFoundError.new(plan_stack) if @selected_plan.nil?
+
+            if @selected_plan.nil?
+              puts "No plan found at #{@plan_stack.join('/')}"
+              puts @arguments.parser
+              exit 1
+            end
           end
 
           # Prevent the prompt from exploading
