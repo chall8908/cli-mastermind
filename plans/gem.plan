@@ -1,6 +1,4 @@
 #-*- ruby -*-
-require 'rubygems/command_manager'
-
 plot :gem do
   description 'Builds the mastermind gem'
   # NOTE: The Gem::Package interface doesn't appear to be completely stable.
@@ -10,7 +8,7 @@ plot :gem do
     Dir.mkdir 'pkg' unless Dir.exists? 'pkg'
 
     require 'rubygems/package'
-    spec = configuration.gemspec
+    spec = config.gemspec
 
     Gem::Package.build(spec)
 
@@ -24,5 +22,18 @@ plot :gem do
     config.plans['gem']['build'].call
 
     Gem::Installer.at(File.join('pkg', config.gemspec.file_name)).install
+  end
+
+  description 'Package and push a new release'
+  plan :release do
+    config.plans['gem']['build'].call
+    spec = config.gemspec
+
+    `git tag '#{spec.version}'`
+    `git push origin HEAD`
+    `git push --tags`
+
+    require 'rubygems/command_manager'
+    Gem::CommandManager.instance['push'].invoke File.join('pkg', spec.file_name)
   end
 end
