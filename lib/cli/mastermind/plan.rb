@@ -48,7 +48,10 @@ module CLI
       end
 
       def call(options)
-        instance_exec(options, &@block)
+        case @block.arity
+        when 1, -1 then instance_exec(options, &@block)
+        else            instance_exec(&@block)
+        end
       end
 
       private
