@@ -2,3 +2,5 @@
 at_project_root
 
 has_plan_files
+
+configure(:gemspec) { Gem::Specification.load('cli-mastermind.gemspec') }

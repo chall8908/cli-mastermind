@@ -1,0 +1,28 @@
+#-*- ruby -*-
+require 'rubygems/command_manager'
+
+plot :gem do
+  description 'Builds the mastermind gem'
+  # NOTE: The Gem::Package interface doesn't appear to be completely stable.
+  #       This may only work on version 2.7.7 of RubyGems, though other versions
+  #       seem to support passing only a spec as I'm doing here.
+  plan :build do
+    Dir.mkdir 'pkg' unless Dir.exists? 'pkg'
+
+    require 'rubygems/package'
+    spec = configuration.gemspec
+
+    Gem::Package.build(spec)
+
+    File.write(File.join('pkg', spec.file_name), File.read(spec.file_name), mode: ?w)
+    File.delete(spec.file_name)
+  end
+
+  description 'Install mastermind into the local system'
+  plan :install do
+    require 'rubygems/installer'
+    config.plans['gem']['build'].call
+
+    Gem::Installer.at(File.join('pkg', config.gemspec.file_name)).install
+  end
+end

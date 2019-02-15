@@ -47,7 +47,7 @@ module CLI
         @children.any?
       end
 
-      def call(options)
+      def call(options=nil)
         case @block.arity
         when 1, -1 then instance_exec(options, &@block)
         else            instance_exec(&@block)
