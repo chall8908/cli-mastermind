@@ -68,17 +68,15 @@ module CLI
         end
       end
 
-      # Used by the DSL to specify that the masterplan at +filename+ has been loaded
-      def masterplan_loaded(filename)
-        @loaded_masterplans << filename
+      # Loads a masterplan using the DSL, if it exists and hasn't been loaded already
+      def load_masterplan filename
+        if File.exists? filename and !@loaded_masterplans.include? filename
+          @loaded_masterplans << filename
+          DSL.new(self, filename)
+        end
       end
 
       private
-
-      # Loads a masterplan using the DSL, if it exists and hasn't been loaded already
-      def load_masterplan filename
-        DSL.new(self, filename) if File.exists? filename and !@loaded_masterplans.include? filename
-      end
 
       # Walks up the file tree looking for masterplans.
       def lookup_and_load_masterplans
@@ -95,14 +93,13 @@ module CLI
         def initialize(config, filename)
           @config = config
           @filename = filename
-          see_also filename
-          @config.masterplan_loaded filename
+          instance_eval(File.read(filename), filename, 0) if File.exists? filename
         end
 
         # Specifies that another masterplan should also be loaded when loading
         # this masterplan.  NOTE: This _immediately_ loads the other masterplan.
         def see_also(filename)
-          instance_eval(File.read(filename), filename, 0) if File.exists? filename
+          @config.load_masterplan(filename)
         end
 
         # With no arguments, specifies that the current directory containing this
