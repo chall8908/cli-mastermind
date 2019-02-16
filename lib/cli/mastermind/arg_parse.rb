@@ -15,6 +15,8 @@ module CLI::Mastermind
       @initial_arguments = arguments
       @ask = true
       @display_ui = true
+      @show_config = false
+      @call_blocks = false
 
       parse_arguments
     end
@@ -39,6 +41,14 @@ module CLI::Mastermind
       @ask
     end
 
+    def dump_config?
+      @show_config
+    end
+
+    def resolve_callable_attributes?
+      @call_blocks
+    end
+
     def parser
       @parser ||= OptionParser.new do |opt|
         opt.banner = 'Usage: mastermind [--help, -h] [--plans[ PATTERN], --tasks[ PATTERN], -T [PATTERN], -P [PATTERN] [PLAN[, PLAN[, ...]]] -- [PLAN ARGUMENTS]'
@@ -58,6 +68,11 @@ module CLI::Mastermind
 
         opt.on('--plans [PATTERN]', '--tasks [PATTERN]', '-P', '-T', 'Display plans.  Optional pattern is used to filter the returned plans.') do |pattern|
           @pattern = Regexp.new(pattern || '.')
+        end
+
+        opt.on('-C', '--show-configuration', 'Load configuration and print final values.  Give multiple times to resolve lazy attributes as well.') do
+          @call_blocks = @show_config
+          @show_config = true
         end
       end
     end

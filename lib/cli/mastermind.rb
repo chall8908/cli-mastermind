@@ -27,6 +27,12 @@ module CLI
 
         frame('Mastermind') do
           @config = spinner('Loading configuration') { Configuration.new }
+
+          if @arguments.dump_config?
+            do_print_configuration
+            exit 0
+          end
+
           @plans = spinner('Loading plans') { @config.load_plans }
 
           if @arguments.display_plans?
@@ -47,6 +53,39 @@ module CLI
       end
 
       private
+
+      def do_print_configuration
+        frame('Configuration') do
+          fade_code = CLI::UI::Color.new(90, '').code
+          puts stylize("{{?}} #{fade_code}Values starting with {{*}} #{fade_code}were lazy loaded.#{CLI::UI::Color::RESET.code}")
+          print "\n"
+          @config.instance_variables.each do |attribute|
+            value = @config.instance_variable_get(attribute)
+
+            if value.respond_to? :call
+              if @arguments.resolve_callable_attributes?
+                value = begin
+                          value.call
+                        rescue => e
+                          "UNABLE TO LOAD: #{e.messae}"
+                        end
+              end
+
+              was_callable = true
+            else
+              was_callable = false
+            end
+
+            name = attribute.to_s.delete_prefix('@')
+
+            suffix = was_callable ? '{{*}}' : ' '
+
+            puts stylize("{{yellow:#{name}}}")
+            puts stylize("\t #{suffix} {{blue:#{value}}}")
+            print "\n"
+          end
+        end
+      end
 
       def do_filtered_plan_display
         filter_plans @arguments.pattern
