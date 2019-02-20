@@ -65,12 +65,14 @@ module CLI
       def load_plans
         @plans = {}
 
+        top_level_plan = Plan.new('temporary_plan')
+
         @plan_files.each do |file|
           plans = Plan.load file
-          plans.each(&method(:incorporate_plan))
+          top_level_plan.add_children plans
         end
 
-        @plans
+        @plans = top_level_plan.children
       end
 
       # Loads a masterplan using the DSL, if it exists and hasn't been loaded already
@@ -82,31 +84,6 @@ module CLI
       end
 
       private
-
-      def incorporate_plan(plan)
-        # If this namespace isn't taken just add the plan
-        if @plans.has_key? plan.name
-
-          # Otherwise, we need to handle a name collision
-          existing_plan = @plans[plan.name]
-
-          # If both plans have children, we merge them together
-          if existing_plan.has_children? and plan.has_children?
-            existing_plan.children.merge! plan.children
-
-            return existing_plan
-          end
-
-          # Otherwise, the plan defined later wins and overwrites the existing plan
-          warn <<~PLAN_COLLISON.strip
-                 Top-level plan collision at "#{plan.name}" encountered when loading plans from "#{plan.filename}".
-                 "#{plan.name}" was previously defined in "#{existing_plan.filename}".
-                 Plans from "#{plan.filename}" will be used instead.
-               PLAN_COLLISON
-        end
-
-        @plans[plan.name] = plan
-      end
 
       # Walks up the file tree looking for masterplans.
       def lookup_and_load_masterplans
