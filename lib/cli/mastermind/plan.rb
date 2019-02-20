@@ -16,6 +16,9 @@ module CLI
       # Used in the interactive plan selector to display child plans
       attr_reader :children
 
+      # The file this plan was loaded from, if any
+      attr_reader :filename
+
       # Loads a particular plan from the filesystem.
       # @see Loader
       def self.load(filename)
@@ -24,9 +27,10 @@ module CLI
         loader.load(filename)
       end
 
-      def initialize(name, description=nil, &block)
+      def initialize(name, description=nil, filename=nil, &block)
         @name = name.to_s.freeze
         @description = description.freeze
+        @filename = filename
         @block = block
         @children = {}
       end

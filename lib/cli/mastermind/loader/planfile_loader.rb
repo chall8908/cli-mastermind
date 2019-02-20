@@ -17,6 +17,7 @@ module CLI::Mastermind
 
         def initialize(filename=nil, &block)
           @plans = []
+          @filename = filename
 
           if block_given?
             instance_eval(&block)
@@ -28,10 +29,10 @@ module CLI::Mastermind
         end
 
         def plot(name, &block)
-          plan = Plan.new name, @description
+          plan = Plan.new name, @description, @filename
           @description = nil
           @plans << plan
-          plan.add_children DSL.new(&block).plans
+          plan.add_children DSL.new(@filename, &block).plans
         end
         alias_method :namespace, :plot
 
@@ -41,7 +42,7 @@ module CLI::Mastermind
         alias_method :desc, :description
 
         def plan(name, &block)
-          @plans << Plan.new(name, @description, &block)
+          @plans << Plan.new(name, @description, @filename, &block)
           @description = nil
         end
         alias_method :task, :plan
