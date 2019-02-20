@@ -8,5 +8,8 @@ module CLI
         super "Unsupported file type: #{extension}"
       end
     end
+
+    class InvalidPlanError < Error
+    end
   end
 end

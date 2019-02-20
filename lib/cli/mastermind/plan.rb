@@ -39,7 +39,7 @@ module CLI
       alias_method :dig, :get_child
 
       def add_children(plans)
-        raise 'Cannot add child plans to a plan with an action', InvalidPlanError unless @block.nil?
+        raise InvalidPlanError, 'Cannot add child plans to a plan with an action' unless @block.nil?
         plans.each { |plan| @children[plan.name] = plan }
       end
 

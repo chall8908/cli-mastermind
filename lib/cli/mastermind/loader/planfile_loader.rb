@@ -7,6 +7,9 @@ module CLI::Mastermind
         DSL.new(filename).plans
       end
 
+      class InvalidPlanfileError < Error
+      end
+
       private
 
       class DSL
@@ -20,7 +23,7 @@ module CLI::Mastermind
           elsif File.exists? filename
             instance_eval(File.read(filename), filename, 0)
           else
-            raise 'Must provide valid path to a planfile or a block', Error
+            raise InvalidPlanfileError, 'Must provide valid path to a planfile or a block'
           end
         end
 
