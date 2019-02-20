@@ -28,11 +28,11 @@ module CLI
       def self.add_attribute(attribute)
         return if self.method_defined? attribute
 
-        self.define_method "#{attribute}=" do |new_value=nil,&block|
+        define_method "#{attribute}=" do |new_value=nil,&block|
           self.instance_variable_set("@#{attribute}", new_value||block)  if self.instance_variable_get("@#{attribute}").nil?
         end
 
-        self.define_method attribute do
+        define_method attribute do
           value = self.instance_variable_get("@#{attribute}")
           return value unless value.respond_to?(:call)
 

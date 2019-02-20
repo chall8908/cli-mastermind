@@ -76,7 +76,7 @@ module CLI
               was_callable = false
             end
 
-            name = attribute.to_s.delete_prefix('@')
+            name = attribute.to_s.sub(/^@/, '')
 
             suffix = was_callable ? '{{*}}' : ' '
 
