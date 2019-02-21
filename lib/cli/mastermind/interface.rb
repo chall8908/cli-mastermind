@@ -14,27 +14,30 @@ module CLI::Mastermind::Interface
   # Display a spinner with a +title+ while data is being loaded
   # @returns the value of the given block
   # @see https://github.com/Shopify/cli-ui#spinner-groups
-  def spinner(title)
+  def spinner(title, &block)
     return yield unless ui_enabled?
 
-    yield_value = nil
-
-    group = CLI::UI::SpinGroup.new
-    group.add(title) do |spinner|
-      catch(:success) do
-        msg = catch(:fail) do
-          yield_value = yield spinner
-          throw :success
-        end
-
-        puts msg
-        CLI::UI::Spinner::TASK_FAILED
-      end
+    results = concurrently do |actions|
+      actions.await(title, &block)
     end
+
+    results[title]
+  end
+  alias_method :await, :spinner
+
+  # Performs a set of actions concurrently
+  # Yields an +AsyncSpinners+ objects which inherits from +CLI::UI::SpinGroup+.
+  # The only difference between the two is that +AsyncSpinners+ provides a
+  # mechanism for exfiltrating results by using +await+ instead of the usual
+  # +add+.
+  def concurrently
+    group = AsyncSpinners.new
+
+    yield group
 
     group.wait
 
-    yield_value
+    group.results
   end
 
   # Uses +CLI::UI.fmt+ to format a string
@@ -107,5 +110,30 @@ module CLI::Mastermind::Interface
   #   titleize('foo_bar') => 'Foo Bar'
   def titleize(string)
     string.gsub(/[-_-]/, ' ').split(' ').map(&:capitalize).join(' ')
+  end
+
+  class AsyncSpinners < CLI::UI::SpinGroup
+    attr_reader :results
+
+    def initialize
+      @results = {}
+      super
+    end
+
+    def await(title)
+      @results[title] = nil
+
+      add(title) do |spinner|
+        catch(:success) do
+          msg = catch(:fail) do
+            @results[title] = yield spinner
+            throw :success
+          end
+
+          puts msg
+          CLI::UI::Spinner::TASK_FAILED
+        end
+      end
+    end
   end
 end
