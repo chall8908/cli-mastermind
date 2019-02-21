@@ -41,8 +41,8 @@ module CLI::Mastermind
         end
         alias_method :desc, :description
 
-        def plan(name, &block)
-          @plans << Plan.new(name, @description, @filename, &block)
+        def plan(name, plan_class = Plan, &block)
+          @plans << plan_class.new(name, @description, @filename, &block)
           @description = nil
         end
         alias_method :task, :plan
