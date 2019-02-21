@@ -62,12 +62,14 @@ module CLI
           @config.instance_variables.each do |attribute|
             value = @config.instance_variable_get(attribute)
 
+            name = attribute.to_s.sub(/^@/, '')
+
             if value.respond_to? :call
               if @arguments.resolve_callable_attributes?
                 value = begin
-                          value.call
+                          @config.send(name)
                         rescue => e
-                          "UNABLE TO LOAD: #{e.messae}"
+                          "UNABLE TO LOAD: #{e.message}"
                         end
               end
 
@@ -75,8 +77,6 @@ module CLI
             else
               was_callable = false
             end
-
-            name = attribute.to_s.sub(/^@/, '')
 
             suffix = was_callable ? '{{*}}' : ' '
 
