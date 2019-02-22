@@ -78,23 +78,28 @@ module CLI::Mastermind::Interface
     default_value = nil
     options = case options
               when Array
-                default_value = default
+                default_text = default
 
                 o = options - [default]
                 o.zip(o).to_h
               when Hash
-                # Handle the "default" default.  Otherwise, we expect the
-                # default to be a key in the options hash
-                default = default.first if default.is_a? Array
-                default_value = options[default]
-                options.dup.tap { |o| o.delete(default) }
+                # Handle the "default" default.  Otherwise, we expect the default
+                # is the default value
+                if default.is_a? Array
+                  default_text, default = default
+                else
+                  default_text = options.invert[default]
+                end
+
+                # dup so that we don't change whatever was passed in
+                options.dup.tap { |o| o.delete(default_text) }
               end
 
     CLI::UI::Prompt.ask(question, **opts) do |handler|
-      handler.option(titleize(default.to_s)) { default_value }
+      handler.option(default_text.to_s) { default }
 
       options.each do |(text, value)|
-        handler.option(titleize(text.to_s)) { value }
+        handler.option(text) { value }
       end
     end
   end
