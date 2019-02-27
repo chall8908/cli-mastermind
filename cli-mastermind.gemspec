@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.executables   = %w[ mastermind ]
   spec.require_paths = %w[ lib ]
 
-  spec.add_runtime_dependency "cli-ui", "~> 1.2", ">= 1.2.1"
+  spec.add_runtime_dependency "cli-ui", "~> 1.2", ">= 1.2.0"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rspec", "~> 3.0"
