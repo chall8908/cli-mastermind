@@ -144,12 +144,6 @@ module CLI
             exit 1
           end
         end
-
-        # Prevent the prompt from exploading
-        if @selected_plan.nil? and @plans.count == 1
-          @selected_plan = @plans.values.first
-          @plan_stack << titleize(@selected_plan.name)
-        end
       end
 
       def do_interactive_plan_selection

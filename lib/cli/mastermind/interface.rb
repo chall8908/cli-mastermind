@@ -66,10 +66,14 @@ module CLI::Mastermind::Interface
   end
 
   # Display an interactive list of options for the user to select.
+  # If less than 2 options would be displayed, the default value is automatically
+  # returned.
   #
   # @param +question+ The question to ask the user
   # @param +options:+ Array|Hash the options to display
-  # @param +default:+ The value or key to display first.  Defaults to the first option.
+  # @param +default:+ The default value for this question.  Defaults to the first
+  #                   option.  The default option is displayed first.  Assumed to
+  #                   exist within the given options.
   #
   # Any other keyword arguments given are passed down into +CLI::UI::Prompt.ask+.
   #
@@ -94,6 +98,8 @@ module CLI::Mastermind::Interface
                 # dup so that we don't change whatever was passed in
                 options.dup.tap { |o| o.delete(default_text) }
               end
+
+    return default unless options.count > 0
 
     CLI::UI::Prompt.ask(question, **opts) do |handler|
       handler.option(default_text.to_s) { default }
