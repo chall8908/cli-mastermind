@@ -60,9 +60,11 @@ Any arguments specified after `--` are passed as-is down to the executed plan.
 You can then process those arguments however you like or ignore them completely!
 
 Unlike Rake and other, similar, tools that allow you to run multiple tasks in
-parallel, Mastermind is designed to run only one task at a time.  Specifying
+parallel, _Mastermind is designed to run only one task at a time_.  Specifying
 multiple plan names on the command line is how you walk down the tree to a
 specific plan.
+
+For more information on how to configure Mastermind, check out the [wiki](wiki).
 
 ## Development
 
