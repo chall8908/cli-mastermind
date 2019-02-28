@@ -1,6 +1,6 @@
 # Wraps methods from CLI::UI in a slightly nicer DSL
 # @see https://github.com/Shopify/cli-ui
-module CLI::Mastermind::Interface
+module CLI::Mastermind::UserInterface
   # Enables cli-ui's STDOUT Router for fancy UIs
   def enable_ui
     CLI::UI::StdoutRouter.enable

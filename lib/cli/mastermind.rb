@@ -3,14 +3,14 @@ require 'cli/ui'
 require 'cli/mastermind/arg_parse'
 require 'cli/mastermind/configuration'
 require 'cli/mastermind/errors'
-require 'cli/mastermind/interface'
+require 'cli/mastermind/user_interface'
 require 'cli/mastermind/loader'
 require 'cli/mastermind/plan'
 require 'cli/mastermind/version'
 
 module CLI
   module Mastermind
-    extend Interface
+    extend UserInterface
 
     class << self
       # Expose the configuration loaded during +execute+.
