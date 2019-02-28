@@ -75,7 +75,9 @@ module CLI
           end
 
           # Otherwise, the plan defined later wins and overwrites the existing plan
-          warn <<~PLAN_COLLISON.strip
+
+          # Warn the user that this is happening, unless we're running tests.
+          warn <<~PLAN_COLLISON.strip unless defined? RSpec
                  Plan name collision encountered when loading plans from "#{plan.filename}" that cannot be merged.
                  "#{plan.name}" was previously defined in "#{existing_plan.filename}".
                  Plans from "#{plan.filename}" will be used instead.
