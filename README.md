@@ -5,6 +5,10 @@ command line tools.
 
 Mastermind is designed for flexibility, extensibility, minimal dependencies.
 
+## My devious plot cannot wait!  Tell me your secrets!
+
+If you want to jump right into using Mastermind, head over to the [wiki][wiki].
+
 ## Flexibility
 
 Mastermind is written in Ruby and, therefore, provides first-class citizenship
@@ -64,7 +68,8 @@ parallel, _Mastermind is designed to run only one task at a time_.  Specifying
 multiple plan names on the command line is how you walk down the tree to a
 specific plan.
 
-For more information on how to configure Mastermind, check out the [wiki](wiki).
+For more information on how to use and configure Mastermind, check out the
+[wiki][wiki].
 
 ## Development
 
@@ -85,5 +90,6 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/chall8
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-[writing-masterplans]: wiki/Writing-Masterplans
+[wiki]: https://github.com/chall8908/cli-mastermind/wiki
+[writing-masterplans]: https://github.com/chall8908/cli-mastermind/wiki/Writing-Masterplans
 [cli-ui]: https://github.com/shopify/cli-ui
