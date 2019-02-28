@@ -43,6 +43,9 @@ Obviously, it'd be a bit difficult to write your plan files in an entirely separ
 language, but there's nothing stopping you from delegating actions to another
 executable or even writing some C code to call into something else alltogether.
 
+If you are writing your plans in Ruby, Mastermind provides `CLI::Mastermind::Plan::Interface`
+which you can include in your plans to provide the basic `Plan` interface.
+
 ## Minimal Dependencies
 
 Mastermind only has one dependency, Shopify's excelent [cli-ui project][cli-ui].

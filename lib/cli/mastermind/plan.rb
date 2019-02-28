@@ -1,23 +1,14 @@
 require 'forwardable'
+require 'cli/mastermind/plan/interface'
 
 module CLI
   module Mastermind
     class Plan
-      extend Forwardable
       include UserInterface
-
-      # The name of the plan.  Used to specify the plan from the command line
-      # or from the interactive menu
-      attr_reader :name
-
-      # Displayed in the non-interactive list of available plans
-      attr_reader :description
+      include Interface
 
       # Used in the interactive plan selector to display child plans
       attr_reader :children
-
-      # The file this plan was loaded from, if any
-      attr_reader :filename
 
       # Loads a particular plan from the filesystem.
       # @see Loader
@@ -28,10 +19,8 @@ module CLI
       end
 
       def initialize(name, description=nil, filename=nil, &block)
-        @name = name.to_s.freeze
-        @description = description.freeze
-        @filename = filename
-        @block = block
+        super
+
         @children = {}
       end
 
@@ -86,10 +75,6 @@ module CLI
 
         @children[plan.name] = plan
       end
-
-      # Delegate configuration to the top-level configuration object
-      def_delegator :'CLI::Mastermind', :configuration
-      alias_method :config, :configuration
     end
   end
 end
