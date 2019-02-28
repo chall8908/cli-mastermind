@@ -4,7 +4,6 @@ require 'cli/mastermind/plan/interface'
 module CLI
   module Mastermind
     class Plan
-      include UserInterface
       include Interface
 
       # Used in the interactive plan selector to display child plans

@@ -25,6 +25,8 @@ module CLI::Mastermind
 
           # The file this plan was loaded from, if any
           attr_reader :filename
+
+          include UserInterface
         end
       end
 
