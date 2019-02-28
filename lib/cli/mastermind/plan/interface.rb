@@ -15,15 +15,17 @@ module CLI::Mastermind
       extend Forwardable
 
       def self.included(base)
-        # The name of the plan.  Used to specify the plan from the command line
-        # or from the interactive menu
-        base.attr_reader :name
+        base.class_eval do
+          # The name of the plan.  Used to specify the plan from the command line
+          # or from the interactive menu
+          attr_reader :name
 
-        # Displayed in the non-interactive list of available plans
-        base.attr_reader :description
+          # Displayed in the non-interactive list of available plans
+          attr_reader :description
 
-        # The file this plan was loaded from, if any
-        base.attr_reader :filename
+          # The file this plan was loaded from, if any
+          attr_reader :filename
+        end
       end
 
       def initialize(name, description=nil, filename=nil, &block)
