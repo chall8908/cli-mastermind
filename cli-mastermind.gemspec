@@ -8,11 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Chris Hall"]
   spec.email         = ["chall8908@gmail.com"]
 
-  spec.summary       = "Mastermind is a library for constructing command line toolboxes."
+  spec.summary       = "Mastermind is a framework for constructing command line toolboxes."
   spec.description   = <<-DESC
                          Take over the world from your command line!
                          With mastermind, you can quickly build and generate
-                         command line toolkits without having to custom build
+                         command line tools without having to custom build
                          everything for every project.
                        DESC
   spec.homepage      = "https://github.com/chall8908/cli-mastermind"
