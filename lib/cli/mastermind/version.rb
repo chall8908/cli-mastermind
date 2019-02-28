@@ -7,8 +7,8 @@ module CLI
 
     module VERSION
       RELEASE = 0
-      MAJOR = 1
-      MINOR = 1
+      MAJOR = 2
+      MINOR = 0
       PATCH = nil
 
       STRING = [RELEASE, MAJOR, MINOR, PATCH].compact.join('.').freeze
