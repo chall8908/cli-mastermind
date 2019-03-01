@@ -168,7 +168,7 @@ module CLI
           @config.public_send "#{attribute}=", value, &block
         end
 
-        def alias(name, arguments)
+        def define_alias(name, arguments)
           @config.define_alias(name, arguments)
         end
 
