@@ -129,6 +129,8 @@ module CLI
       end
 
       def process_plan_names
+        @arguments.do_command_expansion!(@config)
+
         @plan_stack = []
 
         @selected_plan = nil

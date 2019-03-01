@@ -46,6 +46,10 @@ module CLI::Mastermind
           @description = nil
         end
         alias_method :task, :plan
+
+        def alias(alias_to)
+          @plans.last.add_alias(alias_to)
+        end
       end
     end
   end

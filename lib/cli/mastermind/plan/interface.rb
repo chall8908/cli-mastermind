@@ -26,6 +26,9 @@ module CLI::Mastermind
           # The file this plan was loaded from, if any
           attr_reader :filename
 
+          # Provides shorter names for the plan
+          attr_reader :aliases
+
           include UserInterface
         end
       end
@@ -35,6 +38,7 @@ module CLI::Mastermind
         @description = description.freeze
         @filename = filename
         @block = block
+        @aliases = Set.new
       end
 
       def has_children?
@@ -43,6 +47,11 @@ module CLI::Mastermind
 
       def call(options=nil)
         raise NotImplementedError
+      end
+
+      def add_alias(alias_to)
+        config.define_alias(alias_to, name)
+        @aliases.add alias_to
       end
 
       # Delegate configuration to the top-level configuration object

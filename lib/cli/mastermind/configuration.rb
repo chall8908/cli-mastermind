@@ -51,6 +51,9 @@ module CLI
         @loaded_masterplans = Set.new
         @plan_files = Set.new
 
+        # If no alias exists for a particular value, return that value
+        @aliases = Hash.new { |_,k| k }
+
         lookup_and_load_masterplans
         load_masterplan MASTER_PLAN
       end
@@ -81,6 +84,16 @@ module CLI
           @loaded_masterplans << filename
           DSL.new(self, filename)
         end
+      end
+
+      def define_alias(alias_from, alias_to)
+        arguments = alias_to.split(' ') if alias_to.is_a? String
+
+        @aliases[alias_from] = arguments unless @aliases.has_key? alias_from
+      end
+
+      def map_alias(input)
+        @aliases[input]
       end
 
       private
@@ -134,6 +147,10 @@ module CLI
         def configure(attribute, value=nil, &block)
           Configuration.add_attribute(attribute)
           @config.public_send "#{attribute}=", value, &block
+        end
+
+        def alias(name, arguments)
+          @config.define_alias(name, arguments)
         end
 
         private

@@ -21,6 +21,15 @@ module CLI::Mastermind
       parse_arguments
     end
 
+    def do_command_expansion!(config)
+
+      @mastermind_arguments.map! do |argument|
+        expand_argument(config, argument)
+      end
+
+      @mastermind_arguments.flatten!
+    end
+
     def display_plans?
       !@pattern.nil?
     end
@@ -79,9 +88,32 @@ module CLI::Mastermind
 
     private
 
+    def expand_argument(config, argument)
+      dealiased = config.map_alias(argument)
+
+      if dealiased.is_a? Array
+        partitioned = dealiased.slice_before('--').to_a
+
+        # Recursively expand plan names
+        # NOTE: This does not defend against circular dependencies!
+        plan_names = partitioned.shift.map { |arg|  expand_argument(config, arg) }.flatten
+
+        plan_arguments = partitioned.shift
+
+        if plan_arguments
+          plan_arguments.shift # removes the --
+          @plan_arguments.concat plan_arguments
+        end
+
+        dealiased = plan_names
+      end
+
+      dealiased
+    end
+
     def parse_arguments
       @mastermind_arguments = @initial_arguments.take_while { |arg| arg != '--' }
-      @plan_arguments = @initial_arguments[(@mastermind_arguments.size + 1)..-1]
+      @plan_arguments = @initial_arguments[(@mastermind_arguments.size + 1)..-1] || []
 
       unless @mastermind_arguments.empty?
         @mastermind_arguments = parser.parse *@mastermind_arguments
