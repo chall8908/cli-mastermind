@@ -133,11 +133,12 @@ module CLI
 
         @plan_stack = []
 
-        @selected_plan = nil
+        @selected_plan = @plans
 
         while @arguments.has_additional_plan_names?
           plan_name = @arguments.get_next_plan_name
-          @selected_plan = (@selected_plan || @plans)[plan_name]
+
+          @selected_plan = @selected_plan[plan_name]
           @plan_stack << titleize(plan_name)
 
           if @selected_plan.nil?
