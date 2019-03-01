@@ -78,6 +78,25 @@ module CLI
         @plans = top_level_plan.children
       end
 
+      def execute_plan(*plan_stack, arguments: nil)
+        if plan_stack.size == 1
+          case plan_stack.first
+          when Array
+            plan_stack = plan_stack.first
+          when String
+            plan_stack = plan_stack.first.split(' ')
+          end
+        end
+
+        plan = @plans
+
+        plan_stack.each do |plan_name|
+          plan = plan[plan_name]
+        end
+
+        plan.call(arguments)
+      end
+
       # Loads a masterplan using the DSL, if it exists and hasn't been loaded already
       def load_masterplan filename
         if File.exists? filename and !@loaded_masterplans.include? filename
