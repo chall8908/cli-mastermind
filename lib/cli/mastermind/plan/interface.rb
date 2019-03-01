@@ -50,7 +50,7 @@ module CLI::Mastermind
       end
 
       def add_alias(alias_to)
-        config.define_alias(alias_to, name)
+        config.define_alias(alias_to.to_s, name)
         @aliases.add alias_to
       end
 
