@@ -7,7 +7,7 @@ module CLI
 
     module VERSION
       RELEASE = 0
-      MAJOR = 3
+      MAJOR = 4
       MINOR = 0
       PATCH = nil
 
