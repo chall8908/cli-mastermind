@@ -100,11 +100,18 @@ module CLI
       end
 
       def display_plans(plans=@plans, prefix='')
+        fade_code = CLI::UI::Color.new(90, '').code
+
         plans.each do |(name, plan)|
           next unless plan.has_children? or plan.description
 
           print prefix + '• '
-          puts stylize("{{yellow:#{titleize(name)}")
+          puts stylize("{{yellow:#{titleize(name)} #{fade_code}(#{name})#{CLI::UI::Color::RESET.code}")
+
+          if plan.aliases.any?
+            puts prefix + "  - #{fade_code}aliases: #{plan.aliases.to_a.join(', ')}#{CLI::UI::Color::RESET.code}"
+          end
+
           if plan.description
             print prefix + '  - '
             puts stylize("{{blue:#{plan.description}}}")
