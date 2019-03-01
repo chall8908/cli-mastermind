@@ -22,10 +22,13 @@ module CLI::Mastermind
     end
 
     def do_command_expansion!(config)
+      @alias_arguments = []
 
       @mastermind_arguments.map! do |argument|
         expand_argument(config, argument)
       end
+
+      @plan_arguments = @alias_arguments + @plan_arguments
 
       @mastermind_arguments.flatten!
     end
@@ -102,7 +105,7 @@ module CLI::Mastermind
 
         if plan_arguments
           plan_arguments.shift # removes the --
-          @plan_arguments.concat plan_arguments
+          @alias_arguments.concat plan_arguments
         end
 
         dealiased = plan_names
