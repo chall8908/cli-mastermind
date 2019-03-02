@@ -50,6 +50,7 @@ module CLI
       def initialize
         @loaded_masterplans = Set.new
         @plan_files = Set.new
+        @ask_for_confirmation = true
 
         # If no alias exists for a particular value, return that value
         @aliases = Hash.new { |_,k| k }
@@ -115,6 +116,14 @@ module CLI
         @aliases[input]
       end
 
+      def ask?
+        @ask_for_confirmation
+      end
+
+      def skip_confirmation!
+        @ask_for_confirmation = false
+      end
+
       private
 
       # Walks up the file tree looking for masterplans.
@@ -170,6 +179,12 @@ module CLI
 
         def define_alias(name, arguments)
           @config.define_alias(name, arguments)
+        end
+
+        # SKip confirmation before plan execution.
+        # Identical to -A.
+        def skip_confirmation
+          @config.skip_confirmation!
         end
 
         private

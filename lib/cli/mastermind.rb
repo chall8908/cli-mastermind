@@ -168,7 +168,7 @@ module CLI
       end
 
       def user_is_sure?
-        !@arguments.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
+        !@arguments.ask? or !@config.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
       end
 
       def execute_plan!
