@@ -140,7 +140,7 @@ module CLI
 
         @plan_stack = []
 
-        @selected_plan = @plans
+        @selected_plan = @plans if @arguments.has_additional_plan_names?
 
         while @arguments.has_additional_plan_names?
           plan_name = @arguments.get_next_plan_name
