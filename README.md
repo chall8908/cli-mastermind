@@ -71,6 +71,9 @@ parallel, _Mastermind is designed to run only one task at a time_.  Specifying
 multiple plan names on the command line is how you walk down the tree to a
 specific plan.
 
+If you don't provide enough information to Mastermind to walk to an executable
+plan, Mastermind will provide you with a list of available options to choose.
+
 For more information on how to use and configure Mastermind, check out the
 [wiki][wiki].
 
