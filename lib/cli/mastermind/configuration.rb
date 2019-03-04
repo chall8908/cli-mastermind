@@ -179,6 +179,8 @@ module CLI
           @config.public_send "#{attribute}=", value, &block
         end
 
+        # Define a user alias.  User aliases are expanded as part of plan selection.
+        # @see ArgParse#do_command_expansion!
         def define_alias(name, arguments)
           @config.define_alias(name, arguments)
         end
