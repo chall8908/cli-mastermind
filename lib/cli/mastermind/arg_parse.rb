@@ -31,6 +31,7 @@ module CLI::Mastermind
       @plan_arguments = @alias_arguments + @plan_arguments
 
       @mastermind_arguments.flatten!
+      nil # prevent @mastermind_arguments from leaking
     end
 
     # Adds the given base plan to the beginning of the arguments array
