@@ -93,7 +93,7 @@ module CLI
             suffix = was_callable ? '{{*}}' : ' '
 
             puts stylize("{{yellow:#{name}}}")
-            puts stylize("\t #{suffix} {{blue:#{value}}}")
+            puts stylize("\t #{suffix} {{blue:#{value.inspect}}}")
             print "\n"
           end
         end
