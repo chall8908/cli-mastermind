@@ -47,7 +47,8 @@ module CLI
       # masterplans, so it's important that it be set.
       add_attribute :project_root
 
-      def initialize
+      def initialize(base_path=nil)
+        @base_path = base_path
         @loaded_masterplans = Set.new
         @plan_files = Set.new
         @ask_for_confirmation = true
@@ -72,6 +73,7 @@ module CLI
         top_level_plan = Plan.new('temporary_plan')
 
         @plan_files.each do |file|
+          next unless @base_path.nil? or file.start_with? @base_path
           plans = Plan.load file
           top_level_plan.add_children plans
         end

@@ -18,6 +18,12 @@ module CLI
         @config
       end
 
+      # Allows utilities wrapping mastermind to specify that only plans under a
+      # particular path should be loaded.
+      def base_path=(base_path)
+        @base_path = base_path
+      end
+
       # Process incoming options and take an appropriate action.
       # This is normally called by the mastermind executable.
       def execute(cli_args=ARGV)
@@ -26,7 +32,7 @@ module CLI
         enable_ui if @arguments.display_ui?
 
         frame('Mastermind') do
-          @config = spinner('Loading configuration') { Configuration.new }
+          @config = spinner('Loading configuration') { Configuration.new @base_path }
 
           if @arguments.dump_config?
             do_print_configuration
