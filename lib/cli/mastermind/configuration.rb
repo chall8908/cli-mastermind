@@ -62,7 +62,13 @@ module CLI
 
       # Adds a set of filenames for plans into the set of +@plan_files+
       def add_plans(planfiles)
-        @plan_files.merge(planfiles)
+        allowed_plans = if @base_path.nil?
+                          planfiles
+                        else
+                          planfiles.select { |file| file.start_with? @base_path }
+                        end
+
+        @plan_files.merge(allowed_plans)
       end
 
       # Loads all plan files added using +add_plans+
@@ -73,7 +79,6 @@ module CLI
         top_level_plan = Plan.new('temporary_plan')
 
         @plan_files.each do |file|
-          next unless @base_path.nil? or file.start_with? @base_path
           plans = Plan.load file
           top_level_plan.add_children plans
         end
