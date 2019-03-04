@@ -18,10 +18,16 @@ module CLI
         @config
       end
 
-      # Allows utilities wrapping mastermind to specify that only plans under a
+      # Allows utilities wrapping Mastermind to specify that only plans under a
       # particular path should be loaded.
       def base_path=(base_path)
         @base_path = base_path
+      end
+
+      # Allows utilities wrapping Mastermind to specify a top level plan without
+      # having to monkey with the incomming arguments.
+      def base_plan=(base_plan)
+        @base_plan = base_plan
       end
 
       # Process incoming options and take an appropriate action.
@@ -143,6 +149,8 @@ module CLI
 
       def process_plan_names
         @arguments.do_command_expansion!(@config)
+
+        @arguments.insert_base_plan!(@base_plan) unless @base_plan.nil?
 
         @plan_stack = []
 

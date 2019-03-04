@@ -33,6 +33,12 @@ module CLI::Mastermind
       @mastermind_arguments.flatten!
     end
 
+    # Adds the given base plan to the beginning of the arguments array
+    def insert_base_plan!(base_plan)
+      @mastermind_arguments.unshift base_plan
+      nil # prevent @mastermind_arguments from leaking
+    end
+
     def display_plans?
       !@pattern.nil?
     end
