@@ -185,6 +185,7 @@ module CLI
           Configuration.add_attribute(attribute)
           @config.public_send "#{attribute}=", value, &block
         end
+        alias_method :set, :configure
 
         # Define a user alias.  User aliases are expanded as part of plan selection.
         # @see ArgParse#do_command_expansion!
