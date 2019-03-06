@@ -37,4 +37,23 @@ RSpec.describe CLI::Mastermind::Configuration do
       end
     end
   end
+
+  context 'DSL' do
+    let(:config) { described_class.new }
+    let(:dsl) { described_class::DSL.new config, '' }
+
+    context '#configure' do
+      it 'creates a method on the configuration object' do
+        dsl.configure(:test)
+
+        expect(config).to respond_to(:test)
+      end
+
+      it 'accepts a hash as the key: value' do
+        dsl.configure(test: 'foo')
+
+        expect(config.test).to eq 'foo'
+      end
+    end
+  end
 end

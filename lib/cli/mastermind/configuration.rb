@@ -180,6 +180,8 @@ module CLI
         # Add arbitrary configuration attributes to the configuration object.
         # Use this to add plan specific configuration options.
         def configure(attribute, value=nil, &block)
+          attribute, value = attribute.first if attribute.is_a? Hash
+
           Configuration.add_attribute(attribute)
           @config.public_send "#{attribute}=", value, &block
         end
