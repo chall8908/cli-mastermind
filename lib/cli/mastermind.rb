@@ -1,4 +1,5 @@
 # coding: utf-8
+require 'forwardable'
 require 'cli/ui'
 require 'cli/mastermind/arg_parse'
 require 'cli/mastermind/configuration'

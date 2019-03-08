@@ -13,6 +13,8 @@ module CLI::Mastermind
       private
 
       class DSL
+        extend Forwardable
+
         attr_reader :plans
 
         def initialize(filename=nil, &block)
@@ -50,6 +52,12 @@ module CLI::Mastermind
         def set_alias(alias_to)
           @plans.last.add_alias(alias_to)
         end
+
+        # Delegate configuration to the top-level configuration object
+        # Planfile loading happens well after configuration has been loaded. So,
+        # we can safely rely on it being setup at this point.
+        def_delegator :'CLI::Mastermind', :configuration
+        alias_method :config, :configuration
       end
     end
   end

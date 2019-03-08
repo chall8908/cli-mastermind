@@ -1,4 +1,3 @@
-require 'forwardable'
 require 'cli/mastermind/plan/interface'
 
 module CLI
