@@ -1,8 +1,8 @@
-# This masterplan contains all the availble commands for the masterplan DSL.
+# This masterplan contains all the available commands for the masterplan DSL.
 # Many of the commands will be commented out as they are not used directly by
 # the plans specified in this repository.
 
-## Specifing the project root ##
+## Specifying the project root ##
 #
 # Use this command to specify the root of your project.
 # You must pass a directory into this method

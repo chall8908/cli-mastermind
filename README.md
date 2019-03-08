@@ -26,11 +26,11 @@ See [Writing Masterplans][writing-masterplans] for more on their structure and
 semantics.
 
 Mastermind makes up for the lack of flexibility in its configuration with full
-flexibility in its planfiles.  Which brings us to...
+flexibility in its plan files.  Which brings us to...
 
 ## Extensibility
 
-Mastermind is designed from the outset to provide a means of extending its planfile
+Mastermind is designed from the outset to provide a means of extending its plan file
 formats through custom `Loader`s.  In fact, Mastermind's own `PlanfileLoader` is
 the first of such loaders.  You can specify your own file extensions and provide
 your own loaders as needed.
@@ -41,14 +41,14 @@ about in the details!
 
 Obviously, it'd be a bit difficult to write your plan files in an entirely separate
 language, but there's nothing stopping you from delegating actions to another
-executable or even writing some C code to call into something else alltogether.
+executable or even writing some C code to call into something else altogether.
 
 If you are writing your plans in Ruby, Mastermind provides `CLI::Mastermind::Plan::Interface`
 which you can include in your plans to provide the basic `Plan` interface.
 
 ## Minimal Dependencies
 
-Mastermind only has one dependency, Shopify's excelent [cli-ui project][cli-ui].
+Mastermind only has one dependency, Shopify's excellent [cli-ui project][cli-ui].
 Mastermind doesn't require that you load it in your Gemfile or add anything to
 your project's configuration files.
 
