@@ -105,34 +105,44 @@ module CLI
 
         unless @plans.empty?
           frame('Plans') do
-            display_plans
+            puts build_display_string
           end
         else
           puts stylize("{{x}} No plans match #{@arguments.pattern.source}")
         end
       end
 
-      def display_plans(plans=@plans, prefix='')
+      def build_display_string(plans=@plans, prefix='')
         fade_code = CLI::UI::Color.new(90, '').code
+        reset     = CLI::UI::Color::RESET.code
+
+        display_string = ''
 
         plans.each do |(name, plan)|
           next unless plan.has_children? or plan.description
 
-          print prefix + '• '
-          puts stylize("{{yellow:#{titleize(name)} #{fade_code}(#{name})#{CLI::UI::Color::RESET.code}")
+          display_string += prefix + '• '
+          display_string += stylize("{{yellow:#{titleize(name)} #{fade_code}(#{name})#{reset}\n")
 
           if plan.aliases.any?
-            puts prefix + "  - #{fade_code}aliases: #{plan.aliases.to_a.join(', ')}#{CLI::UI::Color::RESET.code}"
+            display_string += prefix + "  - #{fade_code}aliases: #{plan.aliases.to_a.join(', ')}#{reset}\n"
           end
 
           if plan.description
-            print prefix + '  - '
-            puts stylize("{{blue:#{plan.description}}}")
+            display_string += prefix + '  - '
+            display_string += stylize("{{blue:#{plan.description}}}\n")
           end
 
-          display_plans(plan.children, "  " + prefix) if plan.has_children?
-          print "\n"
+          if plan.has_children?
+            display_string += "\n"
+            display_string += build_display_string(plan.children, "  " + prefix)
+          end
+
+          display_string += "\n"
         end
+
+        # Collapse any run of three or more newlines into just two
+        display_string.gsub(/\n{3,}/, "\n\n")
       end
 
       def filter_plans(pattern, plans=@plans)
