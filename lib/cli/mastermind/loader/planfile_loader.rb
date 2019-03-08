@@ -31,7 +31,7 @@ module CLI::Mastermind
         end
 
         def plot(name, &block)
-          plan = Plan.new name, @description, @filename
+          plan = ParentPlan.new name, @description, @filename
           @description = nil
           @plans << plan
           plan.add_children DSL.new(@filename, &block).plans
@@ -43,7 +43,7 @@ module CLI::Mastermind
         end
         alias_method :desc, :description
 
-        def plan(name, plan_class = Plan, &block)
+        def plan(name, plan_class = ExecutablePlan, &block)
           @plans << plan_class.new(name, @description, @filename, &block)
           @description = nil
         end

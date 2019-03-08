@@ -7,6 +7,8 @@ require 'cli/mastermind/errors'
 require 'cli/mastermind/user_interface'
 require 'cli/mastermind/loader'
 require 'cli/mastermind/plan'
+require 'cli/mastermind/parent_plan'
+require 'cli/mastermind/executable_plan'
 require 'cli/mastermind/version'
 
 module CLI

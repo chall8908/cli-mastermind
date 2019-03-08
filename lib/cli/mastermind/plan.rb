@@ -1,78 +1,62 @@
-require 'cli/mastermind/plan/interface'
-
 module CLI
   module Mastermind
-    class Plan
-      include Interface
+    # The plan interface is everything that is required in order for an object
+    # to be usable as a plan.
+    #
+    # Objects adhering to this interface must implement their own +call+ method.
+    # This method is what is invoked by Mastermind to execute a plan.
+    #
+    # Mastermind assumes that any plan it encounters could have children, hence
+    # the +has_children?+ method here.  Since the default PlanfileLoader doesn't
+    # permit custom plan classes when defining a plan with children, it's assumed
+    # that any custom plans (which include this interface) won't have any children
+    # at all.
+    module Plan
+      extend Forwardable
 
-      # Used in the interactive plan selector to display child plans
-      attr_reader :children
+      def self.included(base)
+        base.class_eval do
+          # The name of the plan.  Used to specify the plan from the command line
+          # or from the interactive menu
+          attr_reader :name
 
-      # Loads a particular plan from the filesystem.
-      # @see Loader
-      def self.load(filename)
-        ext = File.extname(filename)
-        loader = Loader.find_loader(ext)
-        loader.load(filename)
+          # Displayed in the non-interactive list of available plans
+          attr_reader :description
+
+          # The file this plan was loaded from, if any
+          attr_reader :filename
+
+          # Provides shorter names for the plan
+          attr_reader :aliases
+
+          include UserInterface
+        end
       end
 
       def initialize(name, description=nil, filename=nil, &block)
-        super
-
-        @children = {}
-      end
-
-      # Get the child plan with the specified +name+
-      def get_child(name)
-        @children[name]
-      end
-      alias_method :[], :get_child
-      alias_method :dig, :get_child
-
-      def add_children(plans)
-        raise InvalidPlanError, 'Cannot add child plans to a plan with an action' unless @block.nil?
-        plans.each(&method(:incorporate_plan))
+        @name = name.to_s.freeze
+        @description = description.freeze
+        @filename = filename
+        @block = block
+        @aliases = Set.new
       end
 
       def has_children?
-        @children.any?
+        false
       end
 
       def call(options=nil)
-        case @block.arity
-        when 1, -1 then instance_exec(options, &@block)
-        else            instance_exec(&@block)
-        end
+        raise NotImplementedError
       end
 
-      private
-
-      def incorporate_plan(plan)
-        # If this namespace isn't taken just add the plan
-        if @children.has_key? plan.name
-
-          # Otherwise, we need to handle a name collision
-          existing_plan = @children[plan.name]
-
-          # If both plans have children, we merge them together
-          if existing_plan.has_children? and plan.has_children?
-            existing_plan.add_children plan.children.values
-
-            return existing_plan
-          end
-
-          # Otherwise, the plan defined later wins and overwrites the existing plan
-
-          # Warn the user that this is happening, unless we're running tests.
-          warn <<~PLAN_COLLISON.strip unless defined? RSpec
-                 Plan name collision encountered when loading plans from "#{plan.filename}" that cannot be merged.
-                 "#{plan.name}" was previously defined in "#{existing_plan.filename}".
-                 Plans from "#{plan.filename}" will be used instead.
-               PLAN_COLLISON
-        end
-
-        @children[plan.name] = plan
+      def add_alias(alias_to)
+        config.define_alias(alias_to.to_s, name)
+        @aliases.add alias_to
       end
+
+      # Delegate configuration to the top-level configuration object
+      def_delegator :'CLI::Mastermind', :configuration
+      alias_method :config, :configuration
     end
   end
 end
