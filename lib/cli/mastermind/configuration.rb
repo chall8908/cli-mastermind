@@ -15,6 +15,8 @@ module CLI
     # _last_.  You can use this to specify plans you want accessible everywhere
     # or global configuration that should apply everywhere (unless overridden by
     # more specific masterplans).
+    #
+    # @see Configuration::DSL
     class Configuration
       # Filename of masterplan files
       PLANFILE = '.masterplan'
@@ -144,6 +146,10 @@ module CLI
         end
       end
 
+      # Describes the DSL used in masterplan files.
+      #
+      # See the .masterplan file in the root of this repo for a full example of
+      # the available options.
       class DSL
         def initialize(config, filename)
           @config = config

@@ -1,4 +1,3 @@
-#-*- ruby -*-
 plot :gem do
   description 'Builds the mastermind gem'
   # NOTE: The Gem::Package interface doesn't appear to be completely stable.

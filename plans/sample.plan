@@ -1,4 +1,3 @@
-#-*- ruby -*-
 # aliased as `namespace` for a less fanciful, rake-like way of doing things
 plot :top_level do
 

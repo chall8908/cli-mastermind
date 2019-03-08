@@ -1,6 +1,92 @@
-#-*- ruby -*-
+# This masterplan contains all the availble commands for the masterplan DSL.
+# Many of the commands will be commented out as they are not used directly by
+# the plans specified in this repository.
+
+## Specifing the project root ##
+#
+# Use this command to specify the root of your project.
+# You must pass a directory into this method
+#
+# project_root File.expand_path(__FILE__)
+
+# Alternatively, if this masterplan is in the root of your project, this bit of
+# syntactic sugar can be used instead.  It's equivalent to the example given
+# above.
+
 at_project_root
 
+## Loading Plan files ##
+#
+# Specifies that plan files exist in the given directory.
+# The given directory must exist and be a directory.  Directories passed in are
+# expanded to absolute paths, so relative paths from this file may be given here.
+#
+# plan_files 'plans'
+
+# Alternatively, if the plans directory you're planning to load is in this directory
+# (e.g. it's at ./plans/), you can use this bit of syntactic sugar.  It's equivalent
+# to the example given above.
 has_plan_files
 
+# Specify that a plan file exists in the given location.
+# Multiple paths can be given to specify multiple independent plan files.
+# Any paths given should be absolute or relative from this file.
+#
+# plan_file 'path/to/file.plan'
+
+## Configuration for plans. ##
+#
+# Add a configuration attribute to the main configuration object.
+# Cannot be used to override default methods (i.e. those defined by Ruby).
+# Attempting to do so will likely result in an error being raised or unexpected
+# behavior.
+#
+# Aliased as `set` if you prefer a shorter method name.
+#
+# The following are functionally equivalent:
+#
+#     configure :some_attribute, 'some value'
+#     configure some_attribute: 'some value'
+#
+# If a proc is given, it will be lazily loaded.  The first time the attribute is
+# requested, the given proc will be eval'd in the context of the configuration
+# object (thus, can access all methods defined on it).
+#
+# The following are functionally equivalent:
+#
+#     configure(:some_attribute) { 'some value' }
+#     configure :some_attribute, proc { 'some value' }
+#     configure some_attribute: proc { 'some value' }
+
+# This particular configuration option is used by the gem plans.  It contains the
+# gemspec.  See plans/gem.plan to see how it is used.
 configure(:gemspec) { Gem::Specification.load('cli-mastermind.gemspec') }
+
+## Loading other Masterplans ##
+#
+# Immediately load the given masterplan.
+# Does nothing if the given file does not exist.
+#
+# see_also 'path/to/other/masterplan'
+
+## Defining aliases ##
+#
+# Aliases are expanded recursively (i.e. can reference each other).  You should be
+# careful not to define circular aliases or alias over the name of an actual plan.
+#
+# For example, the following alias would expand forever and crash:
+#
+#     define_alias 'foo', 'foo bar'
+#
+# Aliases can be used to provide arguments to a command.  Arguments are _not_
+# expanded!  So, the following is perfectly safe:
+#
+#     define_alias 'foo', 'bar -- foo'
+
+## Silencing Confirmations ##
+#
+# By default, Mastermind asks if you're user before executing a plan.  This
+# option can be given to disable that behavior.  It is functionally equivalent
+# to passing the -A flag on the command line.
+#
+# skip_confirmation
