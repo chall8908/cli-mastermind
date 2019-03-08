@@ -76,16 +76,7 @@ module CLI
       # Loads all plan files added using +add_plans+
       # @see Plan.load
       def load_plans
-        @plans = {}
-
-        top_level_plan = Plan.new('temporary_plan')
-
-        @plan_files.each do |file|
-          plans = Plan.load file
-          top_level_plan.add_children plans
-        end
-
-        @plans = top_level_plan.children
+        @plans = Loader.load_all(@plan_files)
       end
 
       def execute_plan(*plan_stack, arguments: nil)
