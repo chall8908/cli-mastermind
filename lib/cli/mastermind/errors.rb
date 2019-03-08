@@ -11,5 +11,11 @@ module CLI
 
     class InvalidPlanError < Error
     end
+
+    class InvalidDirectoryError < Error
+      def initialize(message, directory)
+        super "#{message}:  #{directory} does not exist or is not a directory"
+      end
+    end
   end
 end

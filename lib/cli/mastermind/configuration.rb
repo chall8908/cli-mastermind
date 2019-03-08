@@ -154,26 +154,48 @@ module CLI
         # Specifies that another masterplan should also be loaded when loading
         # this masterplan.  NOTE: This _immediately_ loads the other masterplan.
         def see_also(filename)
-          @config.load_masterplan(filename)
+          @config.load_masterplan(File.expand_path(filename))
         end
 
-        # With no arguments, specifies that the current directory containing this
-        # masterplan is at the root of your project.  Otherwise, specifies the root
-        # of the project.
-        def project_root(root = File.dirname(@filename))
+        # Specifies the root of the project.
+        # +root+ must be a directory.
+        def project_root(root)
+          unless Dir.exist? root
+            raise InvalidDirectoryError.new('Invalid project root', root)
+          end
+
           @config.project_root = root
         end
-        alias_method :at_project_root, :project_root
 
-        # With no arguments, specifies that plans exist in a /plans/ directory
-        # under the directory the masterplan is in.
-        def plan_files(directory = File.join(File.dirname(@filename), 'plans'))
-          @config.add_plans(Dir.glob(File.join(directory, '**', "*{#{supported_extensions}}")))
+        # Syntactic sugar on top of `project_root` to specify that the current
+        # masterplan resides in the root of the project.
+        def at_project_root
+          project_root File.dirname(@filename)
         end
-        alias_method :has_plan_files, :plan_files
+
+        # Specify that plans exist in the given +directory+.
+        # Must be a valid directory
+        def plan_files(directory)
+          unless Dir.exist? directory
+            raise InvalidDirectoryError.new('Invalid plan file directory', directory)
+          end
+
+          planfiles = Dir.glob(File.join(directory, '**', "*{#{supported_extensions}}"))
+          planfiles.map! { |file| File.expand_path(file) }
+
+          @config.add_plans(planfiles)
+        end
+
+        # Syntactic sugar on top of `plan_files` to specify that plans exist in
+        # a +plans/+ directory in the current directory.
+        def has_plan_files
+          plan_files File.join(File.dirname(@filename), 'plans')
+        end
 
         # Specifies that a specific plan file exists at the given +filename+.
         def plan_file(*files)
+          files = files.map { |file| File.expand_path file }
+
           @config.add_plans(files)
         end
 
