@@ -1,51 +1,30 @@
-RSpec.describe CLI::Mastermind::Plan do
+RSpec.describe CLI::Mastermind::ParentPlan do
   let(:plan) { described_class.new('test', 'test plan', __FILE__) }
-
-  it 'can access the global configuration object' do
-    CLI::Mastermind.instance_variable_set('@config', CLI::Mastermind::Configuration.allocate)
-
-    plan.instance_variable_set('@block', proc { config })
-
-    expect { plan.call }.to_not raise_error
-  end
-
-  context 'Adding Aliases' do
-    let(:config) { CLI::Mastermind::Configuration.allocate }
-
-    before do
-      config.instance_variable_set('@aliases', {})
-      CLI::Mastermind.instance_variable_set('@config', config)
-    end
-
-    it 'adds the alias to the global alias map' do
-      plan.add_alias('alias')
-
-      # Aliases are always stored as arrays, even when they're from a plan
-      expect(config.map_alias('alias')).to eq [plan.name]
-    end
-  end
 
   context 'Adding Children' do
     context 'Name Collisions' do
       let(:plan_with_children_1) do
         described_class.new('top_level', 'plan with children 1', __FILE__).tap do |plan|
-          plan.add_children([described_class.new('do_thing')])
+          plan.add_children([CLI::Mastermind::ExecutablePlan.new('do_thing')])
         end
       end
 
       let(:plan_with_children_2) do
         described_class.new('top_level', 'plan with children 2', __FILE__).tap do |plan|
-          plan.add_children([described_class.new('do_other_thing')])
+          plan.add_children([CLI::Mastermind::ExecutablePlan.new('do_other_thing')])
         end
       end
 
       let(:plan_without_children) do
-        described_class.new('top_level', 'I have no children', __FILE__)
+        # A ParentPlan is always considered to have children
+        # So we use a generic ExecutablePlan here
+        CLI::Mastermind::ExecutablePlan.new('top_level', 'I have no children', __FILE__)
       end
 
       context 'Only allows one plan with a particular name' do
         [:plan_with_children_1, :plan_with_children_2, :plan_without_children].permutation(2).each do |(plan1, plan2)|
           example "Merging #{plan1} with #{plan2}" do
+            # Load all the plans
             plan1 = send(plan1)
             plan2 = send(plan2)
 
@@ -59,6 +38,7 @@ RSpec.describe CLI::Mastermind::Plan do
       context 'Combines the children of plans when both have children' do
         [:plan_with_children_1, :plan_with_children_2].permutation(2) do |plans|
           example "Merging #{plans.join(' into ')}" do
+            # Load all the plans
             plans.map!(&method(:send))
 
             plan.add_children(plans)
@@ -78,6 +58,7 @@ RSpec.describe CLI::Mastermind::Plan do
 
         plans.each do |plans|
           example "Merging #{plans.join(' into ')}" do
+            # Load all the plans
             plans.map!(&method(:send))
 
             plan.add_children(plans)
