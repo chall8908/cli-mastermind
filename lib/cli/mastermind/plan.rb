@@ -48,6 +48,7 @@ module CLI
       def call(options=nil)
         raise NotImplementedError
       end
+      alias_method :execute, :call
 
       def add_alias(alias_to)
         config.define_alias(alias_to.to_s, name)
