@@ -63,10 +63,44 @@ module CLI
         end
       end
 
+      # Look up a specific plan by its name
+      #
+      # Because plans also implement this method in a compatible way, there are
+      # three ways this method could be used:
+      #
+      #  1. List of arguments
+      #    * Mastermind['name', 'of', 'plans']
+      #
+      #  2. Space separated string
+      #    * Mastermind['name of plans']
+      #
+      #  3. Hash-like access
+      #    * Mastermind['name']['of']['plans']
+      #
+      # All will provide the same plan.
+      #
+      # ---
+      #
+      # GOTCHA: Be careful if your plan name includes a space!
+      #
+      # While it's entirely valid to have a plan name that inlcudes a space, you
+      # should avoid them if you plan to look up your plan using this method.
+      #
+      def [](*plan_stack)
+        # Allow for a single space-separated string
+        if plan_stack.size == 1 and plan_stack.first.is_a?(String)
+          plan_stack = plan_stack.first.split(' ')
+        end
+
+        plan_stack.compact.reduce(plans) do |plan, plan_name|
+          plan[plan_name]
+        end
+      end
+
       private
 
       def plans
-        @plans ||= spinner('Loading plans') { configuration.load_plans }
+        @plans ||= spinner('Loading plans') { Loader.load_all configuration.plan_files }
       end
 
       def do_print_configuration

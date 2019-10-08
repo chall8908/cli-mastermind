@@ -24,7 +24,7 @@ module CLI
       # Path to the top-level masterplan
       MASTER_PLAN = File.join(Dir.home, PLANFILE)
 
-      attr_reader :plans
+      attr_reader :plan_files
 
       # Adds an arbitrary attribute given by +attribute+ to the configuration class
       def self.add_attribute(attribute)
@@ -71,31 +71,6 @@ module CLI
                         end
 
         @plan_files.merge(allowed_plans)
-      end
-
-      # Loads all plan files added using +add_plans+
-      # @see Plan.load
-      def load_plans
-        @plans = Loader.load_all(@plan_files)
-      end
-
-      def execute_plan(*plan_stack, arguments: nil)
-        if plan_stack.size == 1
-          case plan_stack.first
-          when Array
-            plan_stack = plan_stack.first
-          when String
-            plan_stack = plan_stack.first.split(' ')
-          end
-        end
-
-        plan = @plans
-
-        plan_stack.each do |plan_name|
-          plan = plan[plan_name]
-        end
-
-        plan.call(arguments)
       end
 
       # Loads a masterplan using the DSL, if it exists and hasn't been loaded already
