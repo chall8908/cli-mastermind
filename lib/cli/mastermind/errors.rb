@@ -17,5 +17,11 @@ module CLI
         super "#{message}:  #{directory} does not exist or is not a directory"
       end
     end
+
+    class MissingConfigurationError < Error
+      def initialize(attribute)
+        super "#{attribute} has not been defined.  Call `configure :#{attribute}[, value]` in a `#{Configuration::PLANFILE}` to set it."
+      end
+    end
   end
 end

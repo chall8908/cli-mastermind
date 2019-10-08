@@ -126,6 +126,12 @@ module CLI
 
       private
 
+      def method_missing(symbol, *args)
+        super
+      rescue NoMethodError
+        raise MissingConfigurationError, symbol
+      end
+
       # Walks up the file tree looking for masterplans.
       def lookup_and_load_masterplans
         load_masterplan File.join(Dir.pwd, PLANFILE)
