@@ -1,5 +1,6 @@
 # coding: utf-8
 require 'forwardable'
+require 'pathname'
 require 'cli/ui'
 require 'cli/mastermind/arg_parse'
 require 'cli/mastermind/configuration'
@@ -33,6 +34,17 @@ module CLI
         @base_plan = base_plan
       end
 
+      # Allows utilities wrapping Mastermind to specify planfiles that should be
+      # automatically loaded.  Plans loaded this way are loaded _after_ all other
+      # planfiles and so should only be used to set default values.
+      def autoload_masterplan(plan_file_path)
+        path = Pathname.new plan_file_path
+        raise Error, "`#{plan_file_path}` is not an absolute path" unless path.absolute?
+        raise Error, "`#{plan_file_path}` does not exist or is not a file" unless path.file?
+        @autoloads ||= []
+        @autoloads << plan_file_path
+      end
+
       # Process incoming options and take an appropriate action.
       # This is normally called by the mastermind executable.
       def execute(cli_args=ARGV)
@@ -41,6 +53,10 @@ module CLI
         enable_ui if @arguments.display_ui?
 
         frame('Mastermind') do
+          if @autoloads && @autoloads.any?
+            @autoloads.each { |masterplan| configuration.load_masterplan masterplan }
+          end
+
           if @arguments.dump_config?
             do_print_configuration
             exit 0
