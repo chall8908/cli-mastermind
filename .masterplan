@@ -85,7 +85,7 @@ configure(:gemspec) { Gem::Specification.load('cli-mastermind.gemspec') }
 
 ## Silencing Confirmations ##
 #
-# By default, Mastermind asks if you're user before executing a plan.  This
+# By default, Mastermind asks if you're sure before executing a plan.  This
 # option can be given to disable that behavior.  It is functionally equivalent
 # to passing the -A flag on the command line.
 #
