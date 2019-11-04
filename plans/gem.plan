@@ -18,14 +18,14 @@ plot :gem do
   description 'Install mastermind into the local system'
   plan :install do
     require 'rubygems/installer'
-    CLI::Mastermind['gem build']
+    CLI::Mastermind['gem build'].call
 
     Gem::Installer.at(File.join('pkg', config.gemspec.file_name)).install
   end
 
   description 'Package and push a new release'
   plan :release do
-    CLI::Mastermind['gem build']
+    CLI::Mastermind['gem build'].call
     spec = config.gemspec
 
     `git tag '#{spec.version}'`
