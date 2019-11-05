@@ -113,11 +113,11 @@ module CLI
         end
       end
 
-      private
-
       def plans
         @plans ||= spinner('Loading plans') { Loader.load_all configuration.plan_files }
       end
+
+      private
 
       def do_print_configuration
         frame('Configuration') do

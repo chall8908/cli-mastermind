@@ -25,7 +25,7 @@ module CLI
       end
 
       def has_children?
-        true
+        @children.any?
       end
 
       private
