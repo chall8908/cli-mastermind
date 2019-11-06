@@ -46,11 +46,11 @@ module CLI::Mastermind::UserInterface
     CLI::UI.fmt string
   end
 
-  # Opens a CLI::UI frame with the given +title+
+  # Opens a CLI::UI frame with the given +args+
   # @see https://github.com/Shopify/cli-ui#nested-framing
-  def frame(title)
+  def frame(*args)
     return yield unless ui_enabled?
-    CLI::UI::Frame.open(title) { yield }
+    CLI::UI::Frame.open(*args) { yield }
   end
 
   # Ask the user for some text.
