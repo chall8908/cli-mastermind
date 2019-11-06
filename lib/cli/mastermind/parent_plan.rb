@@ -32,6 +32,10 @@ module CLI
 
       def incorporate_plan(plan)
         @children[plan.name] = resolve_conflicts(plan.name, plan)
+
+        plan.aliases.each do |a|
+          @children[a] = resolve_conflicts(a, plan)
+        end
       end
 
       def resolve_conflicts(key, plan)
