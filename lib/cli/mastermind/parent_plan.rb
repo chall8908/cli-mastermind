@@ -31,30 +31,33 @@ module CLI
       private
 
       def incorporate_plan(plan)
-        # If this namespace isn't taken just add the plan
-        if @children.has_key? plan.name
+        @children[plan.name] = resolve_conflicts(plan.name, plan)
+      end
 
-          # Otherwise, we need to handle a name collision
-          existing_plan = @children[plan.name]
+      def resolve_conflicts(key, plan)
+        # If this namespace isn't taken we're good
+        return plan unless @children.has_key?(key)
 
-          # If both plans have children, we merge them together
-          if existing_plan.has_children? and plan.has_children?
-            existing_plan.add_children plan.children.values
+        # Otherwise, we need to handle a name collision
+        existing_plan = @children[key]
 
-            return existing_plan
-          end
+        # If both plans have children, we merge them together
+        if existing_plan.has_children? and plan.has_children?
+          existing_plan.add_children plan.children.values
 
-          # Otherwise, the plan defined later wins and overwrites the existing plan
-
-          # Warn the user that this is happening, unless we're running tests.
-          warn <<~PLAN_COLLISON.strip unless defined? RSpec
-                 Plan name collision encountered when loading plans from "#{plan.filename}" that cannot be merged.
-                 "#{plan.name}" was previously defined in "#{existing_plan.filename}".
-                 Plans from "#{plan.filename}" will be used instead.
-               PLAN_COLLISON
+          return existing_plan
         end
 
-        @children[plan.name] = plan
+        # Otherwise, the plan defined later wins and overwrites the existing plan
+
+        # Warn the user that this is happening, unless we're running tests.
+        warn <<~PLAN_COLLISON.strip unless defined? RSpec
+               Plan name collision encountered when loading plans from "#{plan.filename}" that cannot be merged.
+               "#{key}" was previously defined in "#{existing_plan.filename}".
+               Plan "#{key}" from "#{plan.filename}" will be used instead.
+             PLAN_COLLISON
+
+        plan
       end
     end
   end
