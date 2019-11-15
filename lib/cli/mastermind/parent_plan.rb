@@ -1,7 +1,9 @@
 module CLI
   module Mastermind
     class ParentPlan
+      extend Forwardable
       include Plan
+      include Enumerable
 
       # Used in the interactive plan selector to display child plans
       attr_reader :children
@@ -19,6 +21,8 @@ module CLI
       end
       alias_method :[], :get_child
       alias_method :dig, :get_child
+
+      def_delegators :@children, :each, :keep_if, :empty?
 
       def add_children(plans)
         raise InvalidPlanError, 'Cannot add child plans to a plan with an action' unless @block.nil?

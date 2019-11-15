@@ -236,7 +236,7 @@ module CLI
       end
 
       def do_interactive_plan_selection
-        options = (@selected_plan&.children || plans).map { |k,v| [titleize(k.to_s), v] }.to_h
+        options = (@selected_plan || plans).map { |k,v| [titleize(k.to_s), v] }.to_h
 
         @selected_plan = select("Select a plan under #{@plan_stack.join('/')}", options: options)
         @plan_stack << titleize(@selected_plan.name)
