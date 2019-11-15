@@ -14,7 +14,8 @@ module CLI
 
       # Get the child plan with the specified +name+
       def get_child(name)
-        @children[name]
+        return @children[name] if @children.has_key? name
+        @children.each_value.find { |child| child.aliases.include? name }
       end
       alias_method :[], :get_child
       alias_method :dig, :get_child
@@ -32,10 +33,6 @@ module CLI
 
       def incorporate_plan(plan)
         @children[plan.name] = resolve_conflicts(plan.name, plan)
-
-        plan.aliases.each do |a|
-          @children[a] = resolve_conflicts(a, plan)
-        end
       end
 
       def resolve_conflicts(key, plan)

@@ -13,4 +13,6 @@ plot :top_level do
   plan :second_child do
     # more tasks
   end
+  set_alias :sc
 end
+set_alias :tl

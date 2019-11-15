@@ -51,8 +51,7 @@ module CLI
       alias_method :execute, :call
 
       def add_alias(alias_to)
-        config.define_alias(alias_to.to_s, name)
-        @aliases.add alias_to
+        @aliases.add alias_to.to_s
       end
 
       # Delegate configuration to the top-level configuration object

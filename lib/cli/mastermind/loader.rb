@@ -30,7 +30,7 @@ module CLI::Mastermind
 
       # Loads a particular plan from the filesystem.
       def load_all(files)
-        temp_plan = ParentPlan.new('temporary plan')
+        temp_plan = ParentPlan.new('INTERNAL PLAN HOLDER')
 
         plans = files.map do |file|
           ext = File.extname(file)
@@ -38,7 +38,7 @@ module CLI::Mastermind
           temp_plan.add_children loader.load(file)
         end
 
-        temp_plan.children
+        temp_plan
       end
     end
   end

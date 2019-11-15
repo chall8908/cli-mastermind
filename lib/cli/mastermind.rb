@@ -224,13 +224,14 @@ module CLI
           plan_name = @arguments.get_next_plan_name
 
           @selected_plan = @selected_plan[plan_name]
-          @plan_stack << titleize(plan_name)
 
           if @selected_plan.nil?
-            puts "No plan found at #{@plan_stack.join('/')}"
+            puts "No plan found at #{(@plan_stack + [titleize(plan_name)]).join('/')}"
             puts @arguments.parser
             exit 1
           end
+
+          @plan_stack << titleize(@selected_plan.name)
         end
       end
 

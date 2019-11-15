@@ -69,4 +69,26 @@ RSpec.describe CLI::Mastermind::ParentPlan do
       end
     end
   end
+
+  context 'Children with Aliases' do
+    let(:plan) do
+      described_class.new('top_level', 'plan with alias', __FILE__).tap do |plan|
+        plan.add_children([child_plan])
+      end
+    end
+
+    let(:child_plan) do
+      CLI::Mastermind::ExecutablePlan.new('do_thing').tap do |plan|
+        plan.add_alias 'dt'
+      end
+    end
+
+    it 'can be accessed via the name' do
+      expect(plan['do_thing']).to eq child_plan
+    end
+
+    it 'can be accessed via the alias' do
+      expect(plan['dt']).to eq child_plan
+    end
+  end
 end
