@@ -130,10 +130,15 @@ module CLI::Mastermind::UserInterface
   # arguments.  The command and any kwargs given are passed to IO.popen to capture
   # output.
   #
+  # Optionally, a block may be passed to modify the output of the line prior to
+  # printing.
+  #
   # @see IO.popen
   # @see Open3.popen
-  def capture_command_output(*command, **kwargs)
-    IO.popen(command.flatten, **kwargs) { |io| io.each_line { |line| puts line } }
+  def capture_command_output(*command, **kwargs, &block)
+    # Default block returns what's passed in
+    block ||= -> line { line }
+    IO.popen(command.flatten, **kwargs) { |io| io.each_line { |line| print block.call(line) } }
   end
 
   class AsyncSpinners < CLI::UI::SpinGroup
