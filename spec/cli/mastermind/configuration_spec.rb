@@ -18,6 +18,13 @@ RSpec.describe CLI::Mastermind::Configuration do
       expect(config.test_attribute).to eq 'expected'
     end
 
+    it 'latches false' do
+      config.test_attribute = false
+      config.test_attribute = 'ignored'
+
+      expect(config.test_attribute).to eq false
+    end
+
     context 'callable values' do
       let(:mock_proc) { Proc.new do; end }
 

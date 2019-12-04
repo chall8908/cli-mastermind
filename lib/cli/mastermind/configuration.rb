@@ -30,8 +30,8 @@ module CLI
       def self.add_attribute(attribute)
         return if self.method_defined? attribute
 
-        define_method "#{attribute}=" do |new_value=nil,&block|
-          self.instance_variable_set("@#{attribute}", new_value||block)  if self.instance_variable_get("@#{attribute}").nil?
+        define_method "#{attribute}=" do |new_value=nil, &block|
+          self.instance_variable_set("@#{attribute}", new_value.nil? ? block : new_value) if self.instance_variable_get("@#{attribute}").nil?
         end
 
         define_method attribute do
