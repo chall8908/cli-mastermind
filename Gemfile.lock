@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cli-mastermind (1.2.4)
+    cli-mastermind (1.2.5)
       cli-ui (~> 1.2, >= 1.2.0)
 
 GEM
