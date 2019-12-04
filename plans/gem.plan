@@ -28,9 +28,9 @@ plot :gem do
     CLI::Mastermind['gem build'].call
     spec = config.gemspec
 
-    `git tag '#{spec.version}'`
-    `git push origin HEAD`
-    `git push --tags`
+    capture_command_output('git', 'tag', spec.version.to_s)
+    capture_command_output('git', 'push', 'origin', 'HEAD')
+    capture_command_output('git', 'push', '--tags')
 
     require 'rubygems/command_manager'
     Gem::CommandManager.instance['push'].invoke File.join('pkg', spec.file_name)

@@ -123,6 +123,19 @@ module CLI::Mastermind::UserInterface
     string.gsub(/[-_-]/, ' ').split(' ').map(&:capitalize).join(' ')
   end
 
+  # Capture the output of the given command and print them in a cli-ui friendly way.
+  # This command is an ease of use wrapper around a common capture construct.
+  #
+  # The command given can be a single string, an array of strings, or individual
+  # arguments.  The command and any kwargs given are passed to IO.popen to capture
+  # output.
+  #
+  # @see IO.popen
+  # @see Open3.popen
+  def capture_command_output(*command, **kwargs)
+    IO.popen(command.flatten, **kwargs) { |io| io.each_line { |line| puts line } }
+  end
+
   class AsyncSpinners < CLI::UI::SpinGroup
     attr_reader :results
 
