@@ -55,8 +55,8 @@ module CLI
       #
       # @see ArgParse.add_option
       #
-      # @param args arguments passed directly to OptionParser#on
-      # @param block [Proc] block passed as the handler for the above arguments
+      # @param args (see ArgParse.add_option)
+      # @param block (see ArgParse.add_option)
       # @return [Void]
       def add_argument(*args, &block)
         ArgParse.add_option(*args, &block)
