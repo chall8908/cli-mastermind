@@ -10,6 +10,25 @@ module CLI::Mastermind
     # @return [Array<String>] additional command line arguements passed into the executed plan
     attr_reader :plan_arguments
 
+    class << self
+      # @see ArgParse.add_option
+      # @return [Array] a set of extra options added to the argument parser
+      attr_reader :extra_options
+
+      # Adds arbitrary options to the argument parser.
+      #
+      # Mostly useful for tools wrapping mastermind to add options that all methods
+      # should have access to.
+      #
+      # @param args arguments passed directly to OptionParser#on
+      # @param block [Proc] block passed as the handler for the above arguments
+      # @return [Void]
+      def add_option(*args, &block)
+        @extra_options ||= []
+        @extra_options << [args, block]
+      end
+    end
+
     # @param arguments [Array<String>] the arguements to parse
     def initialize(arguments=ARGV)
       @initial_arguments = arguments
@@ -134,6 +153,10 @@ module CLI::Mastermind
         opt.on('-C', '--show-configuration', 'Load configuration and print final values.  Give multiple times to resolve lazy attributes as well.') do
           @call_blocks = @show_config
           @show_config = true
+        end
+
+        self.class.extra_options.each do |(arguments, block)|
+          opt.on(*arguments, &block)
         end
       end
     end

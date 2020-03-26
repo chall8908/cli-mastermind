@@ -51,6 +51,17 @@ module CLI
         @base_plan = base_plan
       end
 
+      # Convenience method for ArgParse.add_option
+      #
+      # @see ArgParse.add_option
+      #
+      # @param args arguments passed directly to OptionParser#on
+      # @param block [Proc] block passed as the handler for the above arguments
+      # @return [Void]
+      def add_argument(*args, &block)
+        ArgParse.add_option(*args, &block)
+      end
+
       # Allows utilities wrapping Mastermind to specify masterplans that should be
       # automatically loaded.  Masterplans loaded this way are loaded _after_ all
       # others and so should only be used to set default values.
