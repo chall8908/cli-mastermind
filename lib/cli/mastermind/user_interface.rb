@@ -6,14 +6,19 @@ module CLI::Mastermind::UserInterface
     CLI::UI::StdoutRouter.enable
   end
 
-  # :private:
+  # @private
+  # @return [Boolean] if the StdoutRouter is enabled
   def ui_enabled?
     CLI::UI::StdoutRouter.enabled?
   end
 
   # Display a spinner with a +title+ while data is being loaded
-  # @returns the value of the given block
+  #
   # @see https://github.com/Shopify/cli-ui#spinner-groups
+  #
+  # @param title [String] the title to display
+  # @param block [#call] passed to the underlying spinner implementation.
+  # @return the result of calling the given +block+
   def spinner(title, &block)
     return yield unless ui_enabled?
 
@@ -30,6 +35,10 @@ module CLI::Mastermind::UserInterface
   # The only difference between the two is that +AsyncSpinners+ provides a
   # mechanism for exfiltrating results by using +await+ instead of the usual
   # +add+.
+  #
+  # @see AsyncSpinners
+  #
+  # @yieldparam group [AsyncSpinners]
   def concurrently
     group = AsyncSpinners.new
 
@@ -42,6 +51,9 @@ module CLI::Mastermind::UserInterface
 
   # Uses +CLI::UI.fmt+ to format a string
   # @see https://github.com/Shopify/cli-ui#symbolglyph-formatting
+  #
+  # @param string [String] the string to format
+  # @return [String] the formatted string
   def stylize(string)
     CLI::UI.fmt string
   end
@@ -55,12 +67,19 @@ module CLI::Mastermind::UserInterface
 
   # Ask the user for some text.
   # @see https://github.com/Shopify/cli-ui#free-form-text-prompts
+  #
+  # @param question [String] the question to ask the user
+  # @param default [String] the default answer
+  # @return [String] the user's answer
   def ask(question, default: nil)
     CLI::UI.ask(question, default: default)
   end
 
   # Ask the user a yes/no +question+
   # @see https://github.com/Shopify/cli-ui#interactive-prompts
+  #
+  # @param question [String] the question to ask the user
+  # @return [Boolean] how the user answered
   def confirm(question)
     CLI::UI.confirm(question)
   end
@@ -69,13 +88,11 @@ module CLI::Mastermind::UserInterface
   # If less than 2 options would be displayed, the default value is automatically
   # returned.
   #
-  # @param +question+ The question to ask the user
-  # @param +options:+ Array|Hash the options to display
-  # @param +default:+ The default value for this question.  Defaults to the first
-  #                   option.  The default option is displayed first.  Assumed to
-  #                   exist within the given options.
-  #
-  # Any other keyword arguments given are passed down into +CLI::UI::Prompt.ask+.
+  # @param question [String] The question to ask the user
+  # @param options [Array<String>,Hash] the options to display
+  # @param default [String] The default value for this question.  Assumed to exist
+  #   within the given options.
+  # @param opts [Hash] additional options passed into +CLI::UI::Prompt.ask+.
   #
   # @see https://github.com/Shopify/cli-ui#interactive-prompts
   def select(question, options:, default: options.first, **opts)
@@ -111,14 +128,16 @@ module CLI::Mastermind::UserInterface
   end
 
   # Titleize the given +string+.
+  #
   # Replaces any dashes (-) or underscores (_) in the +string+ with spaces and
   # then capitalizes each word.
   #
-  # Examples:
-  #   titleize('foo') => 'Foo'
-  #   titleize('foo bar') => 'Foo Bar'
-  #   titleize('foo-bar') => 'Foo Bar'
-  #   titleize('foo_bar') => 'Foo Bar'
+  # @example titleize('foo') => 'Foo'
+  # @example titleize('foo bar') => 'Foo Bar'
+  # @example titleize('foo-bar') => 'Foo Bar'
+  # @example titleize('foo_bar') => 'Foo Bar'
+  #
+  # @param string [String] the string to titleize.
   def titleize(string)
     string.gsub(/[-_-]/, ' ').split(' ').map(&:capitalize).join(' ')
   end
@@ -133,6 +152,11 @@ module CLI::Mastermind::UserInterface
   # Optionally, a block may be passed to modify the output of the line prior to
   # printing.
   #
+  # @param command [Array<String>] the command to execute
+  # @param kwargs [Hash] additional arguments to be passed into +IO.popen+
+  #
+  # @yieldparam line [String] a line of output to be processed
+  #
   # @see IO.popen
   # @see Open3.popen
   def capture_command_output(*command, **kwargs, &block)
@@ -141,6 +165,8 @@ module CLI::Mastermind::UserInterface
     IO.popen(command.flatten, **kwargs) { |io| io.each_line { |line| print block.call(line) } }
   end
 
+  # Implementation of CLI::UI::SpinGroup with that keeps track of the results from
+  # individual spinners.
   class AsyncSpinners < CLI::UI::SpinGroup
     attr_reader :results
 
@@ -149,6 +175,11 @@ module CLI::Mastermind::UserInterface
       super
     end
 
+    # Waits for a block to execute while displaying a spinner.
+    #
+    # @param title [String] the title to display
+    #
+    # @yieldparam spinner [CLI::UI::Spinner]
     def await(title)
       @results[title] = nil
 

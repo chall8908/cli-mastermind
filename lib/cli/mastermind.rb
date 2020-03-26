@@ -13,30 +13,42 @@ require 'cli/mastermind/executable_plan'
 require 'cli/mastermind/version'
 
 module CLI
+  # The main Mastermind module handles initial setup, user interaction, and final plan execution
   module Mastermind
     extend UserInterface
 
     class << self
-      # Expose the configuration loaded during +execute+.
+      # Lazy-load configuration object
+      #
+      # @return [Configuration] the loaded configuration
       def configuration
         @config ||= spinner('Loading configuration') { Configuration.new @base_path }
       end
 
       # Allows utilities wrapping Mastermind to specify that only plans under a
       # particular path should be loaded.
+      #
+      # @param base_path [String] the path to the planfiles that should be loaded
+      # @return [Void]
       def base_path=(base_path)
         @base_path = base_path
       end
 
       # Allows utilities wrapping Mastermind to specify a top level plan without
       # having to monkey with the incomming arguments.
+      #
+      # @param base_plan [String] the top-level plan that should be automatically selected
+      # @return [Void]
       def base_plan=(base_plan)
         @base_plan = base_plan
       end
 
       # Allows utilities wrapping Mastermind to specify planfiles that should be
-      # automatically loaded.  Plans loaded this way are loaded _after_ all other
-      # planfiles and so should only be used to set default values.
+      # automatically loaded.  Masterplans loaded this way are loaded _after_ all
+      # others and so should only be used to set default values.
+      #
+      # @param plan_file_path [String] the path to the masterplan to load
+      # @return [Void]
       def autoload_masterplan(plan_file_path)
         path = Pathname.new plan_file_path
         raise Error, "`#{plan_file_path}` is not an absolute path" unless path.absolute?
@@ -47,6 +59,9 @@ module CLI
 
       # Process incoming options and take an appropriate action.
       # This is normally called by the mastermind executable.
+      #
+      # @param cli_args [Array<String>] the arguments to pass into {ArgParse}
+      # @return [Void]
       def execute(cli_args=ARGV)
         @arguments = ArgParse.new(cli_args)
 
@@ -102,6 +117,10 @@ module CLI
       # While it's entirely valid to have a plan name that inlcudes a space, you
       # should avoid them if you plan to look up your plan using this method.
       #
+      # Plans with spaces in the name can be looked up using only the first form
+      # of this method.
+      #
+      # @param plan_stack [Array<String>] an array of plans to navigate to
       def [](*plan_stack)
         # Allow for a single space-separated string
         if plan_stack.size == 1 and plan_stack.first.is_a?(String)
@@ -113,12 +132,18 @@ module CLI
         end
       end
 
+      # Lazy-load the plans to be used by Mastermind
+      #
+      # @return [ParentPlan] the top-level parent plan which holds all loaded plans
       def plans
         @plans ||= spinner('Loading plans') { Loader.load_all configuration.plan_files }
       end
 
       private
 
+      # Prints the configuration object built from the loaded masterplan files.
+      #
+      # @return [Void]
       def do_print_configuration
         frame('Configuration') do
           fade_code = CLI::UI::Color.new(90, '').code
@@ -153,6 +178,9 @@ module CLI
         end
       end
 
+      # Filters and displays plans based on the pattern from the passed in arguements
+      #
+      # @return [Void]
       def do_filtered_plan_display
         filter_plans @arguments.pattern
 
@@ -165,6 +193,14 @@ module CLI
         end
       end
 
+      # Builds the string that describes a plan.
+      #
+      # Used for human-readable output of a plan's name, aliases, and description.
+      #
+      # @param plans [ParentPlan,Hash<name, Plan>] the plans to be displayed
+      # @param prefix [String] a prefix to print at the beginning of the output line
+      #
+      # @return [String] the display string for the given plans
       def build_display_string(plans=self.plans, prefix='')
         fade_code = CLI::UI::Color.new(90, '').code
         reset     = CLI::UI::Color::RESET.code
@@ -198,6 +234,14 @@ module CLI
         display_string.gsub(/\n{3,}/, "\n\n")
       end
 
+      # Removes plans whose names don't match the given pattern from the tree.
+      #
+      # Modifies +plans+ in place!
+      #
+      # @param pattern [Regexp] the pattern to match against
+      # @param plans [ParentPlan, Hash<name, Plan>] the plans to filter
+      #
+      # @return [Void]
       def filter_plans(pattern, plans=self.plans)
         plans.keep_if do |name, plan|
           # Don't display plans without a description or children
@@ -211,6 +255,11 @@ module CLI
         end
       end
 
+      # Processes command line arguements to build the starting plan stack.
+      #
+      # @see ArgParse
+      #
+      # @return [Void]
       def process_plan_names
         @arguments.do_command_expansion!(configuration)
 
@@ -235,6 +284,11 @@ module CLI
         end
       end
 
+      # Asks the user to select a plan from the current list of plans.
+      #
+      # Repeated invokations of this command allow the user to traverse the plan tree.
+      #
+      # @return [Void]
       def do_interactive_plan_selection
         options = (@selected_plan || plans).map { |k,v| [titleize(k.to_s), v] }.to_h
 
@@ -242,14 +296,22 @@ module CLI
         @plan_stack << titleize(@selected_plan.name)
       end
 
+      # @return [Boolean] if the currently selected plan is executable
       def executable_plan_selected?
         not (@selected_plan.nil? or @selected_plan.has_children?)
       end
 
+      # Interaction can be skipped via command line flags (see {ArgParse}) or configuration
+      # from a masterplan (see {Configuration})
+      #
+      # @return [Boolean] if the user is sure they want to execute the given plan
       def user_is_sure?
         !@arguments.ask? or !configuration.ask? or confirm("Execute plan #{@plan_stack.join('/')}?")
       end
 
+      # Executes the selected plan
+      #
+      # @return [Void]
       def execute_plan!
         @selected_plan.call(@arguments.plan_arguments)
       end

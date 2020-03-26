@@ -33,23 +33,42 @@ module CLI
         end
       end
 
+      # @param name [String] the name of the plan
+      # @param description [String] the description of the plan
+      # @param filename [String] the name of the file which defined this plan
+      # @param block [#call,nil] a callable used by ExecutablePlan
       def initialize(name, description=nil, filename=nil, &block)
         @name = name.to_s.freeze
         @description = description.freeze
         @filename = filename
+        # TODO: Move this to ExecutablePlan?
         @block = block
         @aliases = Set.new
       end
 
+      # If this plan has children.
+      #
+      # Implemented for compatibility with ParentPlan to make plan traversal easier.
+      #
+      # @return [false] Plans have no children by default
       def has_children?
         false
       end
 
+      # Entrypoint called by Mastermind
+      #
+      # @abstract
+      # @param options [Array<String>,nil] options passed from the command line
+      # @raise [NotImplementedError]
       def call(options=nil)
         raise NotImplementedError
       end
       alias_method :execute, :call
 
+      # Defines a plan alias which allows this plan to be accessed using another
+      # string than its name.
+      #
+      # @param alias_to [String] the alias to accept
       def add_alias(alias_to)
         @aliases.add alias_to.to_s
       end

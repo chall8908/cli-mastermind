@@ -1,3 +1,5 @@
+# @markup ruby
+# @title Sample Masterplan
 # This masterplan contains all the available commands for the masterplan DSL.
 # Many of the commands will be commented out as they are not used directly by
 # the plans specified in this repository.
