@@ -13,7 +13,9 @@ module CLI::Mastermind
     class << self
       # @see ArgParse.add_option
       # @return [Array] a set of extra options added to the argument parser
-      attr_reader :extra_options
+      def extra_options
+        @extra_options ||= []
+      end
 
       # Adds arbitrary options to the argument parser.
       #
