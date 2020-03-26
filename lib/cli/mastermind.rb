@@ -22,7 +22,15 @@ module CLI
       #
       # @return [Configuration] the loaded configuration
       def configuration
-        @config ||= spinner('Loading configuration') { Configuration.new @base_path }
+        @config ||= spinner('Loading configuration') do
+          Configuration.new(@base_path).tap do |config|
+
+            # Load any autoloads
+            if @autoloads && @autoloads.any?
+              @autoloads.each { |masterplan| config.load_masterplan masterplan }
+            end
+          end
+        end
       end
 
       # Allows utilities wrapping Mastermind to specify that only plans under a
@@ -43,18 +51,24 @@ module CLI
         @base_plan = base_plan
       end
 
-      # Allows utilities wrapping Mastermind to specify planfiles that should be
+      # Allows utilities wrapping Mastermind to specify masterplans that should be
       # automatically loaded.  Masterplans loaded this way are loaded _after_ all
       # others and so should only be used to set default values.
       #
-      # @param plan_file_path [String] the path to the masterplan to load
+      # Adding a new autoload after configuration has been initialized will
+      # immediately load the new masterplan.
+      #
+      # @param masterplan_path [String] the path to the masterplan to load
       # @return [Void]
-      def autoload_masterplan(plan_file_path)
-        path = Pathname.new plan_file_path
-        raise Error, "`#{plan_file_path}` is not an absolute path" unless path.absolute?
-        raise Error, "`#{plan_file_path}` does not exist or is not a file" unless path.file?
+      def autoload_masterplan(masterplan_path)
+        path = Pathname.new masterplan_path
+        raise Error, "`#{masterplan_path}` is not an absolute path" unless path.absolute?
+        raise Error, "`#{masterplan_path}` does not exist or is not a file" unless path.file?
         @autoloads ||= []
-        @autoloads << plan_file_path
+        @autoloads << masterplan_path
+
+        # Don't use configuration method here to avoid loading configuration early
+        @config.load_masterplan masterplan_path unless @config.nil?
       end
 
       # Process incoming options and take an appropriate action.
@@ -68,10 +82,6 @@ module CLI
         enable_ui if @arguments.display_ui?
 
         frame('Mastermind') do
-          if @autoloads && @autoloads.any?
-            @autoloads.each { |masterplan| configuration.load_masterplan masterplan }
-          end
-
           if @arguments.dump_config?
             do_print_configuration
             exit 0
