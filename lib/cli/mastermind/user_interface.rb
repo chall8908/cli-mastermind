@@ -70,9 +70,12 @@ module CLI::Mastermind::UserInterface
   #
   # @param question [String] the question to ask the user
   # @param default [String] the default answer
+  # @params opts [Hash] Additional options passed to CLI::UI.ask
+  # @option opts [Boolean] :is_file (nil) Use file autocompletion (tab completion)
+  # @option opts [Boolean] :allow_empty (true) Allow the answer to be empty
   # @return [String] the user's answer
-  def ask(question, default: nil)
-    CLI::UI.ask(question, default: default)
+  def ask(question, default: nil, **opts)
+    CLI::UI.ask(question, default: default, **opts)
   end
 
   # Ask the user a yes/no +question+
