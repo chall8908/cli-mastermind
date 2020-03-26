@@ -89,10 +89,10 @@ module CLI::Mastermind::UserInterface
 
   # Display an interactive list of options for the user to select.
   # If less than 2 options would be displayed, the default value is automatically
-  # returned.
+  # returned unless +multiple:+ is +true+.
   #
   # @param question [String] The question to ask the user
-  # @param options [Array<String>,Hash] the options to display
+  # @param options [Array<#to_s>,Hash<#to_s>] the options to display
   # @param default [String] The default value for this question.  Assumed to exist
   #   within the given options.
   # @param opts [Hash] additional options passed into +CLI::UI::Prompt.ask+.
@@ -118,14 +118,32 @@ module CLI::Mastermind::UserInterface
                   default_text = options.invert[default]
                 end
 
+                default_text = default_text
+
                 # dup so that we don't change whatever was passed in
                 options.dup.tap { |o| o.delete(default_text) }
               end
 
+    # Ensure all keys are strings for CLI::UI
+    default_text = default_text.to_s
+    options.transform_keys!(&:to_s)
+
+    # work around a bug in CLI::UI with multi-select and block invocation
+    if opts[:multiple]
+      # Put default at the beginning so it shows in the expected order
+      keys = [default_text] + options.keys
+
+      # Put default back into the options so it can be pulled out
+      options[default_text] = default
+
+      response = Array(CLI::UI::Prompt.ask(question, options: keys, **opts))
+      return response.map { |resp| options[resp] }
+    end
+
     return default unless options.count > 0
 
     CLI::UI::Prompt.ask(question, **opts) do |handler|
-      handler.option(default_text.to_s) { default }
+      handler.option(default_text) { default }
 
       options.each do |(text, value)|
         handler.option(text) { value }
