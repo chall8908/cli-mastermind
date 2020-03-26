@@ -96,6 +96,9 @@ module CLI::Mastermind::UserInterface
   # @param default [String] The default value for this question.  Assumed to exist
   #   within the given options.
   # @param opts [Hash] additional options passed into +CLI::UI::Prompt.ask+.
+  # @option opts [Boolean] :multiple (false) Whether multiple selections should be made.
+  # @option opts [Boolean] :filter_ui (true) Enable option filtering
+  # @option opts [Boolean] :select_ui (true) Enable long-form option selection
   #
   # @see https://github.com/Shopify/cli-ui#interactive-prompts
   def select(question, options:, default: options.first, **opts)
